@@ -1,0 +1,33 @@
+# Personal settings (Slurm project, path overrides)
+env.local.sh
+
+# Job logs (the directory itself is kept: Slurm needs it before the job starts)
+logs/*
+!logs/.gitkeep
+
+# Built site and Zensical cache
+site/
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ruff_cache/
+
+# Job outputs that may land in the repository
+*.out
+*.err
+core.*
+runs/
+checkpoints/
+profiles/
+wandb/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+._dbindex_

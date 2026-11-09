@@ -1,0 +1,35 @@
+{#-
+  Home page: CINES hero above the content of index.md.
+  Hero texts come from the front matter ("hero" key) of each language.
+-#}
+{% extends "main.html" %}
+
+{% block hero %}
+{% set hero = page.meta.hero %}
+<section class="cines-hero" aria-labelledby="cines-hero-title">
+  <div class="cines-hero__inner">
+    <div class="cines-hero__text">
+      <p class="cines-hero__eyebrow">{{ hero.eyebrow }}</p>
+      <h1 id="cines-hero-title" class="cines-hero__title">{{ config.site_name }}</h1>
+      <p class="cines-hero__lead">{{ hero.lead }}</p>
+      <div class="cines-hero__actions">
+        <a href="{{ hero.start_link | url }}" class="cines-btn cines-btn--primary">{{ hero.start }}</a>
+        <a href="{{ config.repo_url }}" class="cines-btn cines-btn--ghost">{{ hero.repo }}</a>
+      </div>
+    </div>
+    <div class="cines-hero__art" aria-hidden="true">
+      <img src="{{ 'assets/logo/cines-logo-baseline-inverse.svg' | url }}" alt="" width="1220" height="655">
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{#- The title is in the hero: hide the auto-generated h1 -#}
+{% block extrahead %}
+  {{ super() }}
+  <style>
+    .md-content__inner > h1 { display: none; }
+    .md-main__inner { margin-top: .6rem; }
+    .md-content__inner { padding-top: 0; }
+  </style>
+{% endblock %}

@@ -1,0 +1,331 @@
+/* =============================================================================
+   CINES branding for Zensical
+   Colors: dark green #1f3d37 · mid green #3a9e87 · bright green #6edcc3
+   Fonts:  Poppins (headings) · Lato (text) — self-hosted, font = false
+   ========================================================================== */
+
+/* --- Fonts --------------------------------------------------------------- */
+@font-face { font-family: "Lato"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/Lato-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Lato"; font-style: italic; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/Lato-Italic.woff2") format("woff2"); }
+@font-face { font-family: "Lato"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../assets/fonts/Lato-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Lato"; font-style: italic; font-weight: 700; font-display: swap;
+  src: url("../assets/fonts/Lato-BoldItalic.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("../assets/fonts/Poppins-Medium.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 600; font-display: swap;
+  src: url("../assets/fonts/Poppins-SemiBold.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../assets/fonts/Poppins-Bold.woff2") format("woff2"); }
+
+/* --- Color tokens ---------------------------------------------------------- */
+:root {
+  --cines-dark:   #1f3d37;
+  --cines-mid:    #3a9e87;
+  --cines-bright: #6edcc3;
+  --cines-link:   #2c7a69;   /* darkened mid green: 5.1:1 on white */
+  --cines-dark-2: #17302b;   /* footer background */
+  --cines-heading-font: "Poppins";
+
+  --md-text-font: "Lato";
+  --md-code-font: ui-monospace, "SFMono-Regular", Menlo, Consolas;
+}
+
+[data-md-color-primary="custom"] {
+  --md-primary-fg-color:        var(--cines-dark);
+  --md-primary-fg-color--light: var(--cines-mid);
+  --md-primary-fg-color--dark:  var(--cines-dark-2);
+  --md-primary-bg-color:        #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, .7);
+}
+
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color:   var(--cines-link);
+  --md-accent-fg-color:   var(--cines-link);   /* active menu link: AA contrast */
+  --md-accent-fg-color--transparent: rgba(58, 158, 135, .1);
+  --md-accent-bg-color:   #ffffff;
+  --cines-heading-color:  var(--cines-dark);
+  --cines-surface:        #f2f8f6;
+  --cines-border:         #d5e8e2;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 166;   /* green-tinted greys */
+  --md-typeset-a-color:   var(--cines-bright);
+  --md-accent-fg-color:   var(--cines-bright);
+  --md-accent-fg-color--transparent: rgba(110, 220, 195, .1);
+  --md-accent-bg-color:   var(--cines-dark);
+  --cines-heading-color:  #e8f5f1;
+  --cines-surface:        rgba(110, 220, 195, .05);
+  --cines-border:         rgba(110, 220, 195, .18);
+}
+
+/* --- Headings ----------------------------------------------------------- */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  color: var(--cines-heading-color);
+  letter-spacing: -.01em;
+}
+.md-typeset h1 { font-weight: 700; }
+.md-typeset h2 { font-weight: 600; }
+.md-typeset h3,
+.md-typeset h4 { font-weight: 500; }
+.md-typeset h2 { padding-top: .2em; }
+.md-typeset h2::after {      /* short bright-green bar under h2 */
+  content: ""; display: block; width: 2.4rem; height: 3px; margin-top: .45rem;
+  border-radius: 2px; background: var(--cines-bright);
+}
+
+/* --- Header: dark green bar in both schemes ---------------------------------- */
+.md-header {
+  background-color: var(--cines-dark);
+  color: #ffffff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.md-header .md-header__button,
+.md-header .md-header__topic,
+.md-header .md-source,
+.md-header .md-search__icon { color: #ffffff; }
+.md-header__topic .md-ellipsis {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  font-weight: 600;
+}
+/* Search button readable on the dark green header */
+.md-header .md-search__button {
+  color: rgba(255, 255, 255, .85);
+  background-color: rgba(255, 255, 255, .1);
+}
+.md-header .md-search__button:hover { background-color: rgba(255, 255, 255, .16); }
+.md-header .md-search__button::after {   /* Ctrl+K shortcut */
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, .18);
+}
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.7rem;
+  width: auto;
+}
+
+/* --- Links, buttons --------------------------------------------------------- */
+.md-typeset a { text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.md-typeset .md-button {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  font-weight: 600;
+  border-radius: 999px;
+}
+.md-typeset .md-button--primary {
+  background-color: var(--cines-bright);
+  border-color: var(--cines-bright);
+  color: var(--cines-dark);
+}
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: var(--cines-dark);
+}
+
+/* --- Home hero ------------------------------------------------------------ */
+.cines-hero {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(60rem 30rem at 110% -20%, rgba(110, 220, 195, .18), transparent 60%),
+    linear-gradient(160deg, var(--cines-dark) 0%, var(--cines-dark-2) 100%);
+}
+.cines-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+  max-width: 61rem;
+  margin: 0 auto;
+  padding: 3.2rem 1.2rem 3rem;
+}
+.cines-hero__eyebrow {
+  margin: 0 0 .6rem;
+  font-family: var(--cines-heading-font), sans-serif;
+  font-weight: 600;
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cines-bright);
+}
+.cines-hero__title {
+  margin: 0 0 .8rem;
+  font-family: var(--cines-heading-font), sans-serif;
+  font-weight: 700;
+  font-size: 2.3rem;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: #ffffff;
+}
+.cines-hero__lead {
+  max-width: 30rem;
+  margin: 0 0 1.6rem;
+  font-size: .95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .85);
+}
+.cines-hero__actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.cines-btn {
+  display: inline-block;
+  padding: .55rem 1.3rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  font-family: var(--cines-heading-font), sans-serif;
+  font-weight: 600;
+  font-size: .78rem;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.cines-btn--primary {
+  color: var(--cines-dark);
+  background-color: var(--cines-bright);
+  border-color: var(--cines-bright);
+}
+.cines-btn--ghost {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .45);
+}
+.cines-btn--primary:hover,
+.cines-btn--primary:focus-visible {
+  color: var(--cines-dark);
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+.cines-btn--ghost:hover,
+.cines-btn--ghost:focus-visible {
+  color: var(--cines-dark);
+  background-color: var(--cines-bright);
+  border-color: var(--cines-bright);
+}
+.cines-btn:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }
+.cines-hero__art {             /* CINES logo, right-aligned, kept small */
+  justify-self: end;
+  width: 100%;
+  max-width: 16rem;
+}
+.cines-hero__art img { display: block; width: 100%; height: auto; }
+
+@media screen and (max-width: 59.984375em) {
+  .cines-hero__inner { grid-template-columns: 1fr; gap: 1.5rem; padding-top: 2rem; }
+  .cines-hero__art { order: -1; justify-self: start; max-width: 10rem; }
+  .cines-hero__title { font-size: 1.9rem; }
+}
+
+/* --- Home: chapter cards --------------------------------------------------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: 1px solid var(--cines-border);
+  border-radius: .5rem;
+  background: var(--md-default-bg-color);
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--cines-mid);
+  box-shadow: 0 .4rem 1.2rem rgba(31, 61, 55, .1);
+  transform: translateY(-2px);
+}
+.md-typeset .cines-modules > ul > li > p:first-child strong {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  font-weight: 600;
+  color: var(--cines-heading-color);
+}
+.md-typeset .grid.cards > ul > li > hr {
+  border-bottom: 2px solid var(--cines-bright);
+  width: 1.6rem;
+  margin: .5rem 0 .6rem;
+}
+
+/* Whole card clickable: a card whose last paragraph is a single link
+   stretches that link over the card (other links stay clickable above it). */
+.md-typeset .grid.cards > ul > li:has(> p:last-child > a:only-child) {
+  position: relative;
+}
+.md-typeset .grid.cards > ul > li > p:last-child > a:only-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.md-typeset .grid.cards > ul > li:has(> p:last-child > a:only-child)
+  > :not(p:last-child) a {
+  position: relative;
+  z-index: 1;
+}
+.md-typeset .grid.cards > ul > li:has(> p:last-child > a:only-child:focus-visible) {
+  outline: 2px solid var(--cines-mid);
+  outline-offset: 2px;
+}
+.md-typeset .grid.cards > ul > li > p:last-child > a:only-child:focus-visible {
+  outline: none;
+}
+
+/* --- Home: numbered steps -------------------------------------------------- */
+.md-typeset .cines-steps > ol { counter-reset: step; list-style: none; margin-left: 0; }
+.md-typeset .cines-steps > ol > li {
+  position: relative;
+  counter-increment: step;
+  margin-left: 0;
+  padding-left: 2.6rem;
+}
+.md-typeset .cines-steps > ol > li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: -.05rem;
+  display: grid; place-items: center;
+  width: 1.7rem; height: 1.7rem;
+  border-radius: 50%;
+  font-family: var(--cines-heading-font), sans-serif;
+  font-weight: 600; font-size: .8rem;
+  color: var(--cines-dark);
+  background: var(--cines-bright);
+}
+
+/* --- Tables, admonitions, tabs --------------------------------------------- */
+.md-typeset table:not([class]) th {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--cines-dark);
+}
+.md-typeset .tabbed-labels > label {
+  font-family: var(--cines-heading-font), var(--md-text-font-family);
+  font-weight: 500;
+}
+
+/* "cines" admonition: box in the CINES colors */
+.md-typeset .admonition.cines,
+.md-typeset details.cines {
+  border: 1px solid var(--cines-border);
+  border-left: 4px solid var(--cines-mid);
+  background-color: var(--cines-surface);
+}
+.md-typeset .cines > .admonition-title,
+.md-typeset .cines > summary { background-color: transparent; }
+.md-typeset .cines > .admonition-title::before,
+.md-typeset .cines > summary::before {
+  background-color: var(--cines-mid);
+  -webkit-mask-image: var(--md-admonition-icon--info);
+          mask-image: var(--md-admonition-icon--info);
+}
+
+/* --- Footer -------------------------------------------------------------------- */
+.md-footer { background-color: var(--cines-dark); color: #ffffff; }
+.md-footer-meta { background-color: var(--cines-dark-2); }
+.md-footer-meta,
+.md-footer-meta a,
+.md-footer .md-copyright,
+.md-footer .md-copyright__highlight,
+.md-footer .md-copyright a,
+.md-footer .md-social__link { color: rgba(255, 255, 255, .75); }
+.md-footer-meta a:hover,
+.md-footer .md-social__link:hover { color: var(--cines-bright); }
