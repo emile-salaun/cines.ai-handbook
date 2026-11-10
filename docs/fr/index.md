@@ -14,6 +14,12 @@ hide:
 
 # cines.ai - Handbook
 
+!!! warning "En cours de rédaction"
+    Ce guide est en cours de développement. Il traite de l'exécution de
+    calculs d'IA sur Adastra et s'adresse aux utilisateurs qui découvrent la
+    machine. Pour tout le reste, et pour utiliser Adastra au mieux, la
+    référence est la [documentation officielle d'Adastra](https://dci.dci-gitlab.cines.fr/webextranet/).
+
 ## Chapitres
 
 <div class="grid cards cines-modules" markdown>
@@ -48,39 +54,24 @@ hide:
 
     ---
 
-    Un GPU, DDP, LoRA/PEFT, FSDP, DeepSpeed, Accelerate.
+    Un GPU, DDP, LoRA/PEFT, FSDP, DeepSpeed, Accelerate, bf16.
 
     [:octicons-arrow-right-24: Entraînement](training/index.md)
 
--   **5 · Passage à l'échelle**
+-   **5 · Profilage**
 
     ---
 
-    torchrun multi-nœuds, RCCL sur Slingshot, efficacité du passage à l'échelle.
+    PyTorch Profiler, rocprofv3.
 
-    [:octicons-arrow-right-24: Passage à l'échelle](scaling/index.md)
-
--   **6 · Performance et profilage**
-
-    ---
-
-    Binding, bf16, spécificités MI300A, PyTorch Profiler, rocprofv3.
-
-    [:octicons-arrow-right-24: Performance](performance/index.md)
-
--   **7 · Workflows HPC**
-
-    ---
-
-    Checkpoint et redémarrage, chaînes de jobs, balayages, TensorBoard.
-
-    [:octicons-arrow-right-24: Workflows](workflows/index.md)
+    [:octicons-arrow-right-24: Profilage](profiling/index.md)
 
 -   **A · Annexes**
 
     ---
 
-    Aide-mémoire Slurm, MI300A vs MI250X, FAQ, glossaire.
+    Construire votre propre environnement (uv), aide-mémoire Slurm,
+    MI300A vs MI250X, FAQ, glossaire.
 
     [:octicons-arrow-right-24: Annexes](appendices/index.md)
 
@@ -91,10 +82,10 @@ hide:
 <div class="cines-steps" markdown>
 
 1. **Installer une fois** sur un nœud de connexion : cloner le dépôt, définir
-   votre projet Slurm, `source env.sh`. → [Installation](getting-started/setup.md)
+   votre projet Slurm, `source env.sh`. → [Configurer votre environnement](getting-started/setup.md)
 2. **Lancer un premier job GPU** et vérifier l'environnement.
    → [Premier job](getting-started/first-job.md)
-3. **Vérifier les GPU et les communications** avant de passer à plusieurs nœuds.
+3. **Vérifier les GPU et les communications** avant d'utiliser plusieurs GPU.
    → [Vérifications](getting-started/checks.md)
 
 </div>

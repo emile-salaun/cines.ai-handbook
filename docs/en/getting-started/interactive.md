@@ -5,20 +5,55 @@ job that is already running.
 
 ## Interactive allocation (salloc)
 
+From the repository root, replace `<project>` with your project:
+
 === "MI300A"
 
     ```bash
-    bash slurm/interactive.sh          # 4 APUs on one node, 30 min
+    # 1 APU, 30 min
+    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 --gpus-per-node=1 --cpus-per-task=24 --time=00:30:00
+    # whole node (4 APUs), 30 min
+    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 --gpus-per-node=4 --cpus-per-task=96 --time=00:30:00
     ```
 
 === "MI250X"
 
     ```bash
-    CONSTRAINT=MI250 bash slurm/interactive.sh 8     # 8 GCDs on one node, 30 min
+    # 1 GCD, 30 min
+    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 --gpus-per-node=1 --cpus-per-task=8 --time=00:30:00
+    # whole node (8 GCDs), 30 min
+    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 --gpus-per-node=8 --cpus-per-task=64 --time=00:30:00
     ```
 
-`salloc` opens a new shell that holds the allocation. Longer session:
-`TIME=01:00:00 bash slurm/interactive.sh`.
+| Option | Sets | Value |
+|---|---|---|
+| `--account` | project charged for the hours | your project |
+| `--constraint` | node type | `MI300` (MI300A) or `MI250` (MI250X) |
+| `--gpus-per-node` | GPUs | 1 to 4 (MI300A), 1 to 8 (MI250X); at least 1 on shared nodes |
+| `--cpus-per-task` | CPU cores | 24 per GPU (MI300A), 8 per GPU (MI250X) |
+| `--time` | maximum duration | `HH:MM:SS` |
+| `--nodes` | number of nodes | `N` |
+| `--ntasks` | number of tasks | `N` |
+
+`salloc` opens a new shell that holds the allocation.
+
+### What to look at
+
+```text
+salloc: Granted job allocation <jobid>
+salloc: Nodes <node> are ready for job
+```
+
+The new shell **stays on the login node**: `hostname` shows the login node.
+Only commands started with `srun` run on the allocated node:
+
+```bash
+srun hostname                            # the allocated node
+echo $SLURM_JOB_NODELIST                 # the allocated node, at any time in this shell
+squeue --me -O JobID,NodeList,TimeLeft   # node and time left
+```
+
+## Run commands on the node
 
 In this shell, source the environment again (offline mode, MIOpen cache),
 then send commands to the compute node with `srun`:
@@ -54,11 +89,28 @@ GPUs during a training run:
 
 ```bash
 squeue --me                                  # job id and node
-srun --jobid=<jobid> --overlap --pty bash    # shell inside the job
-rocm-smi                                     # GPU use and memory
 ```
 
-`--overlap` shares the job's resources instead of waiting for free ones;
-`exit` leaves the shell, the job continues.
+=== "srun --overlap"
+
+    ```bash
+    srun --jobid=<jobid> --overlap --pty bash    # shell inside the job
+    rocm-smi                                     # GPU use and memory
+    ```
+
+    The shell runs inside the job, with its resources and environment.
+    `--overlap` shares the job's resources instead of waiting for free ones;
+    `exit` leaves the shell, the job continues.
+
+=== "ssh"
+
+    ```bash
+    ssh <node>    # only on a node where you have a job
+    rocm-smi      # GPU use and memory
+    ```
+
+    The shell runs on the node, outside the job context: use it to watch
+    the job, not to run your scripts. `exit` leaves the shell, the job
+    continues.
 
 Ref: [Adastra doc, Job submission (interactive jobs)](https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html).

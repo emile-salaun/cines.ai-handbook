@@ -1,20 +1,23 @@
 # GPU and communication checks
 
 **Goal:** before any performance measurement, check that each process uses
-its own GPU and that RCCL works between GPUs and between nodes.
+its own GPU and that RCCL works between the GPUs of a node.
 
 ## One node
+
+`diagnostics/check_dist.sh` is built from the [template](templates.md)
+`slurm/single_node.sh`: torchrun, one process per GPU, the whole node.
 
 === "MI300A"
 
     ```bash
-    sbatch slurm/single_node.slurm diagnostics/check_dist.py
+    sbatch diagnostics/check_dist.sh
     ```
 
 === "MI250X"
 
     ```bash
-    sbatch --constraint=MI250 --gpus-per-node=8 slurm/single_node.slurm diagnostics/check_dist.py
+    sbatch --constraint=MI250 --gpus-per-node=8 diagnostics/check_dist.sh
     ```
 
 ### What to look at
@@ -45,46 +48,11 @@ One line per process, then the all_reduce result:
 - `omp`: the node's physical cores divided by its GPUs.
 - `OK: all_reduce`: RCCL works between the GPUs of the node.
 
-## Several nodes
-
-=== "MI300A"
-
-    ```bash
-    NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET \
-        sbatch slurm/multi_node.slurm diagnostics/check_dist.py
-    ```
-
-=== "MI250X"
-
-    ```bash
-    NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET \
-        sbatch --constraint=MI250 --gpus-per-node=8 slurm/multi_node.slurm diagnostics/check_dist.py
-    ```
-
-### What to look at
-
-- 8 placement lines on MI300A (2 nodes × 4), 16 on MI250X, on two different
-  hosts, and `OK: all_reduce over 8 processes = 36` (MI300A) or
-  `over 16 processes = 136` (MI250X).
-- RCCL uses the Slingshot network:
-
-    ```bash
-    grep "Selected Provider is cxi" logs/multi_node_<jobid>.out
-    ```
-
-    No match: RCCL falls back to TCP sockets and multi-node jobs will be slow.
-    Check the `aws-ofi-rccl plugin` line of `check_env.py`.
-
-Ref: [Adastra doc, Software stack, libraries (Torch elastic, aws-ofi-rccl)](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
-
-## One GPU
-
-`sbatch slurm/single_gpu.slurm diagnostics/check_dist.py` prints a single
-placement line, with `cores=24` (MI300A) or `cores=8` (MI250X).
+Ref: [Adastra doc, Software stack, libraries](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
 
 ## Reference result
 
 | Partition | Test | Elapsed | Status |
 |---|---|---|---|
-| MI300A | one node, 2 nodes | — | to be measured |
-| MI250X | one node, 2 nodes | — | to be measured |
+| MI300A | one node | — | to be measured |
+| MI250X | one node | — | to be measured |

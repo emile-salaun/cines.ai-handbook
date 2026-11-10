@@ -2,6 +2,10 @@
 
 **Goal:** run a Python script on one GPU and check the environment.
 
+`diagnostics/check_env.sh` is a ready-to-run batch script, built from the
+[template](templates.md) `slurm/single_gpu.sh`. Open it: every line is
+explained in the template.
+
 ## Command
 
 From the repository root, after `source env.sh`:
@@ -9,20 +13,19 @@ From the repository root, after `source env.sh`:
 === "MI300A"
 
     ```bash
-    sbatch slurm/single_gpu.slurm diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
+    sbatch diagnostics/check_env.sh
     ```
 
 === "MI250X"
 
     ```bash
-    sbatch --constraint=MI250 --cpus-per-task=8 \
-        slurm/single_gpu.slurm diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
+    sbatch --constraint=MI250 --cpus-per-task=8 diagnostics/check_env.sh
     ```
 
 Follow the job with `squeue --me`, then read the log:
 
 ```bash
-cat logs/single_gpu_<jobid>.out
+cat logs/check_env_<jobid>.out
 ```
 
 ## What to look at
@@ -30,12 +33,14 @@ cat logs/single_gpu_<jobid>.out
 Every log starts and ends the same way:
 
 ```text
-[job] single_gpu <jobid> started at <date>
+[job] check_env <jobid> started at <date>
 [job] nodes: <node> (1), GPUs per node: 1
-[env] HANDBOOK_ACCOUNT=<project>
-[env] AI environment: <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
+[env] ACCOUNT=<project>
+[env] Python environment (prebuilt): <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
 [env] HF_HOME=<WORKDIR>/hf
-[env] HF_HUB_OFFLINE=1  MIOPEN_USER_DB_PATH=/tmp/<user>-miopen-cache-<jobid>
+[env] DATA_DIR=<WORKDIR>/handbook/datasets
+[env] OUTPUT_DIR=<SCRATCHDIR>/handbook
+[env] HF_HUB_OFFLINE=1  MIOPEN_USER_DB_PATH=/tmp/<user>-miopen-<jobid>-<random>
 [run] python diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
 ...
 [job] ended at <date>, elapsed <hh:mm:ss>, exit code 0
@@ -47,12 +52,10 @@ In between, the output of `check_env.py`:
 - `GPU 0 matmul`: the architecture is `gfx942` on MI300A, `gfx90a` on MI250X.
 - `offline load of Qwen/Qwen2.5-0.5B`: the model is read from your cache,
   without internet.
-- `[WARN] aws-ofi-rccl plugin not found`: harmless on one node, blocking for
-  multi-node jobs (see [checks](checks.md)).
 
 | Failure | Cause |
 |---|---|
-| `Invalid account` at submission | `env.sh` not sourced, or `HANDBOOK_ACCOUNT` not set: see [Set up](setup.md) |
+| `Invalid account` at submission | `env.sh` not sourced, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
 | `offline load` fails | model not downloaded: `bash setup/download_assets.sh` on a login node |
 | no log file | submitted outside the repository root (`logs/` not found) |
 

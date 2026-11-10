@@ -1,33 +1,31 @@
 #!/bin/bash
 # =============================================================================
-# slurm/single_gpu.slurm - One Python process on one GPU (one APU on MI300A,
-# one GCD on MI250X), on a shared node.
+# slurm/single_gpu.sh - Template: one Python process on one GPU (one APU on
+# MI300A, one GCD on MI250X), on a shared node.
 #
-# <project> is replaced by your project: env.sh exports SBATCH_ACCOUNT,
-# which overrides the #SBATCH --account line.
-# MI250X: sbatch --constraint=MI250 --cpus-per-task=8 slurm/single_gpu.slurm ...
-#
-# Usage (from the repository root, after `source env.sh`):
-#   sbatch slurm/single_gpu.slurm <script.py> [args]
-# Example:
-#   sbatch slurm/single_gpu.slurm diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
+# Copy it, adapt the lines marked EDIT, submit from the repository root:
+#   mkdir -p jobs && cp slurm/single_gpu.sh jobs/my_job.sh
+#   sbatch jobs/my_job.sh
+# MI250X: --constraint=MI250 and --cpus-per-task=8.
 # Ref: Adastra doc, Job submission (batch scripts, allocating a single GPU):
 #      https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
 # =============================================================================
-#SBATCH --account=<project>
-#SBATCH --constraint=MI300
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --gpus-per-node=1             # You must ask for at least one GPU when using shared nodes
-#SBATCH --cpus-per-task=24            # 24 per APU on MI300A, 8 per GCD on MI250X
-#SBATCH --threads-per-core=1          # physical cores only (no SMT)
-#SBATCH --time=00:15:00
-#SBATCH --job-name=single_gpu
-#SBATCH --output=logs/%x_%j.out
-#SBATCH --error=logs/%x_%j.out       # same file as --output
+#SBATCH --account=<project>           # leave as is: env.sh sets your project (SBATCH_ACCOUNT)
+#SBATCH --constraint=MI300            # EDIT: node type, MI300 (MI300A) or MI250 (MI250X)
+#SBATCH --nodes=1                     # one node
+#SBATCH --ntasks=1                    # one process
+#SBATCH --gpus-per-node=1             # one GPU; at least one is required on shared nodes
+#SBATCH --cpus-per-task=24            # EDIT: CPU cores, 24 per APU (MI300A), 8 per GCD (MI250X)
+#SBATCH --threads-per-core=1          # physical cores only
+#SBATCH --time=00:15:00               # EDIT: maximum run time (HH:MM:SS); the job is killed after it
+#SBATCH --job-name=my_job             # EDIT: name shown by squeue and used for the log file
+#SBATCH --output=logs/%x_%j.out       # log file: logs/<job name>_<job id>.out
+#SBATCH --error=logs/%x_%j.out        # errors in the same file
 
-set -euo pipefail
-source env.sh
+set -euo pipefail                     # stop at the first error
+source env.sh                         # project, Python environment, offline mode, MIOpen cache
 
-export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
-handbook_run python "$@"
+export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"    # CPU threads = allocated cores
+
+# EDIT: your command. `run` adds start and end lines (elapsed time) to the log.
+run python my_script.py --my-arg 1

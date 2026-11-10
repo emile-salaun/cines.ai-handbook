@@ -15,8 +15,6 @@ sbatch slurm/<modèle> <script.py> [args]
 |---|---|---|---|
 | `single_gpu.slurm` | `python` sur 1 GPU | partagé | premiers tests, inférence, petit fine-tuning |
 | `single_node.slurm` | `torchrun`, un processus par GPU | nœud entier | DDP / FSDP sur un nœud |
-| `multi_node.slurm` | `srun` + `torchrun` sur N nœuds | nœuds entiers | entraînement distribué |
-| `job_array.slurm` | une exécution 1 GPU par ligne d'un fichier d'arguments | partagé | balayages (128 tâches au plus) |
 | `interactive.sh` | `salloc` : une allocation interactive | partagé | débogage |
 
 Sur les nœuds partagés, un job doit demander au moins un GPU : les modèles
@@ -36,16 +34,14 @@ Les options de la ligne de commande `sbatch` l'emportent sur les lignes
 
 | Modèle | MI250X |
 |---|---|
-| `single_gpu.slurm`, `job_array.slurm` | `--constraint=MI250 --cpus-per-task=8` |
-| `single_node.slurm`, `multi_node.slurm` | `--constraint=MI250 --gpus-per-node=8` |
+| `single_gpu.slurm` | `--constraint=MI250 --cpus-per-task=8` |
+| `single_node.slurm` | `--constraint=MI250 --gpus-per-node=8` |
 | `interactive.sh` | `CONSTRAINT=MI250 bash slurm/interactive.sh 8` |
 
-## Autres options courantes
+## Une autre option courante
 
 ```bash
 sbatch --time=01:00:00 slurm/single_gpu.slurm ...    # job plus long
-sbatch --nodes=4 slurm/multi_node.slurm ...          # plus de nœuds
-sbatch --array=0-9%4 slurm/job_array.slurm s.py args.txt   # 10 tâches, 4 à la fois
 ```
 
 Réf. : [documentation Adastra, Job submission](https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html).

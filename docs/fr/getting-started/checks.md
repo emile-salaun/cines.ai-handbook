@@ -1,8 +1,8 @@
 # Vérifications GPU et communications
 
 **Objectif :** avant toute mesure de performance, vérifier que chaque
-processus utilise son propre GPU et que RCCL fonctionne entre GPU et entre
-nœuds.
+processus utilise son propre GPU et que RCCL fonctionne entre les GPU d'un
+nœud.
 
 ## Un nœud
 
@@ -46,37 +46,7 @@ Une ligne par processus, puis le résultat de l'all_reduce :
 - `omp` : les cœurs physiques du nœud divisés par son nombre de GPU.
 - `OK: all_reduce` : RCCL fonctionne entre les GPU du nœud.
 
-## Plusieurs nœuds
-
-=== "MI300A"
-
-    ```bash
-    NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET \
-        sbatch slurm/multi_node.slurm diagnostics/check_dist.py
-    ```
-
-=== "MI250X"
-
-    ```bash
-    NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET \
-        sbatch --constraint=MI250 --gpus-per-node=8 slurm/multi_node.slurm diagnostics/check_dist.py
-    ```
-
-### Ce qu'il faut regarder
-
-- 8 lignes de placement sur MI300A (2 nœuds × 4), 16 sur MI250X, sur deux
-  hôtes différents, et `OK: all_reduce over 8 processes = 36` (MI300A) ou
-  `over 16 processes = 136` (MI250X).
-- RCCL utilise le réseau Slingshot :
-
-    ```bash
-    grep "Selected Provider is cxi" logs/multi_node_<jobid>.out
-    ```
-
-    Aucune ligne : RCCL se rabat sur des sockets TCP et les jobs multi-nœuds
-    seront lents. Vérifiez la ligne `aws-ofi-rccl plugin` de `check_env.py`.
-
-Réf. : [documentation Adastra, Software stack, libraries (Torch elastic, aws-ofi-rccl)](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
+Réf. : [documentation Adastra, Software stack, libraries](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
 
 ## Un GPU
 
@@ -87,5 +57,5 @@ ligne de placement, avec `cores=24` (MI300A) ou `cores=8` (MI250X).
 
 | Partition | Test | Durée | Statut |
 |---|---|---|---|
-| MI300A | un nœud, 2 nœuds | — | à mesurer |
-| MI250X | un nœud, 2 nœuds | — | à mesurer |
+| MI300A | un nœud | — | à mesurer |
+| MI250X | un nœud | — | à mesurer |

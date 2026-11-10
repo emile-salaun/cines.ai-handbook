@@ -34,9 +34,9 @@ before the job starts. The handbook jobs run with `HF_HUB_OFFLINE=1`.
 
 | Variable | Use in the handbook | Purge |
 |---|---|---|
-| `$HOMEDIR` | the repository (`cines.ai-handbook/`), small config files | never |
-| `$WORKDIR` | AI environment, Hugging Face models (`$HF_HOME`), datasets (`$HANDBOOK_DATA`) | never |
-| `$SCRATCHDIR` | job outputs (`$HANDBOOK_OUTPUT`), dataset cache, checkpoints | files unused for 30 days |
+| `$HOMEDIR` | small config files (`~/.bashrc`, Hugging Face token) | never |
+| `$WORKDIR` | the repository (`cines.ai-handbook/`, with its uv environment `.venv`), prebuilt AI environment, Hugging Face models (`$HF_HOME`), datasets (`$DATA_DIR`) | never |
+| `$SCRATCHDIR` | job outputs (`$OUTPUT_DIR`), dataset cache, checkpoints | files unused for 30 days |
 | `$SHAREDWORKDIR`, `$SHAREDSCRATCHDIR` | same, shared within the project | as above |
 
 Check your quotas with `myproject -s <project>`.

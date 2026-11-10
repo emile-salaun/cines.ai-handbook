@@ -25,7 +25,7 @@ nav = [
   { "1 · Prise en main" = [
     "getting-started/index.md",
     { "Adastra en bref" = "getting-started/adastra.md" },
-    { "Installation" = "getting-started/setup.md" },
+    { "Configurer votre environnement" = "getting-started/setup.md" },
     { "Premier job" = "getting-started/first-job.md" },
     { "Modèles de jobs" = "getting-started/templates.md" },
     { "Session interactive" = "getting-started/interactive.md" },
@@ -34,10 +34,11 @@ nav = [
   { "2 · Données et modèles" = "data-models/index.md" },
   { "3 · Inférence" = "inference/index.md" },
   { "4 · Entraînement et fine-tuning" = "training/index.md" },
-  { "5 · Passage à l'échelle" = "scaling/index.md" },
-  { "6 · Performance et profilage" = "performance/index.md" },
-  { "7 · Workflows HPC" = "workflows/index.md" },
-  { "A · Annexes" = "appendices/index.md" },
+  { "5 · Profilage" = "profiling/index.md" },
+  { "A · Annexes" = [
+    "appendices/index.md",
+    { "Construire votre propre environnement (uv)" = "appendices/own-env.md" },
+  ] },
 ]
 
 [project.theme]
@@ -87,6 +88,11 @@ alternate = [
   { name = "English", link = "/cines.ai-handbook/", lang = "en" },
   { name = "Français", link = "/cines.ai-handbook/fr/", lang = "fr" },
 ]
+
+[[project.extra.social]]
+icon = "fontawesome/solid/book"
+link = "https://dci.dci-gitlab.cines.fr/webextranet/"
+name = "Documentation Adastra"
 
 [[project.extra.social]]
 icon = "fontawesome/solid/globe"

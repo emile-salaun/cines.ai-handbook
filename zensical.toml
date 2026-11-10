@@ -25,19 +25,20 @@ nav = [
   { "1 · Getting started" = [
     "getting-started/index.md",
     { "Adastra at a glance" = "getting-started/adastra.md" },
-    { "Set up" = "getting-started/setup.md" },
+    { "Set up your environment" = "getting-started/setup.md" },
     { "First job" = "getting-started/first-job.md" },
-    { "Job templates" = "getting-started/templates.md" },
+    { "Write your job script" = "getting-started/templates.md" },
     { "Interactive session" = "getting-started/interactive.md" },
     { "GPU and communication checks" = "getting-started/checks.md" },
   ] },
   { "2 · Data & models" = "data-models/index.md" },
   { "3 · Inference" = "inference/index.md" },
   { "4 · Training & fine-tuning" = "training/index.md" },
-  { "5 · Scaling out" = "scaling/index.md" },
-  { "6 · Performance & profiling" = "performance/index.md" },
-  { "7 · HPC workflows" = "workflows/index.md" },
-  { "A · Appendices" = "appendices/index.md" },
+  { "5 · Profiling" = "profiling/index.md" },
+  { "A · Appendices" = [
+    "appendices/index.md",
+    { "Build your own environment (uv)" = "appendices/own-env.md" },
+  ] },
 ]
 
 [project.theme]
@@ -87,6 +88,11 @@ alternate = [
   { name = "English", link = "/cines.ai-handbook/", lang = "en" },
   { name = "Français", link = "/cines.ai-handbook/fr/", lang = "fr" },
 ]
+
+[[project.extra.social]]
+icon = "fontawesome/solid/book"
+link = "https://dci.dci-gitlab.cines.fr/webextranet/"
+name = "Adastra documentation"
 
 [[project.extra.social]]
 icon = "fontawesome/solid/globe"

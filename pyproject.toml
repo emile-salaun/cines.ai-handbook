@@ -1,0 +1,66 @@
+# =============================================================================
+# pyproject.toml - The handbook's uv environment (alternative to the prebuilt
+# AI environment). Not a Python package. Exact versions: uv.lock. Python
+# version: .python-version.
+#
+# Install, from the repository root on a login node (uv comes with the
+# `python` module; the environment is .venv in the repository):
+#   module load python
+#   uv sync --locked                       # base: PyTorch, Transformers, HF Hub
+#   uv sync --locked --group training      # base + one group
+#   uv sync --locked --group peft --group diffusers   # base + several groups
+# Each `uv sync` installs exactly what it is given: groups not listed are removed.
+#
+# Groups: one per chapter (inference, training, profiling) and one per
+# framework (accelerate, peft, deepspeed, diffusers); a chapter group includes
+# the framework groups it needs. One uv.lock: same versions in every group.
+#
+# Maintainers, after changing this file: `uv lock`, test the chapter groups on
+# MI300A and MI250X, commit uv.lock.
+# PyTorch comes from the PyTorch ROCm index (wheels with their own ROCm
+# libraries); everything else from PyPI. Same wheels for MI300A (gfx942) and
+# MI250X (gfx90a).
+# Ref: uv, Using uv with PyTorch: https://docs.astral.sh/uv/guides/integration/pytorch/
+#      uv, Dependency groups: https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups
+# =============================================================================
+[project]
+name = "cines-ai-handbook"
+version = "0.1.0"
+description = "uv environment of the cines.ai handbook (Adastra, CINES)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "torch>=2.11.0",
+    # ROCm support relies on both Triton packages, from the PyTorch index.
+    "pytorch-triton-rocm>=3.5.1 ; sys_platform == 'linux'",
+    "triton-rocm>=3.6.0 ; sys_platform == 'linux'",
+    "transformers>=4.57",
+    "huggingface_hub>=0.34",        # provides the `hf` command
+]
+
+[dependency-groups]
+# Frameworks
+accelerate = ["accelerate"]
+peft = [{ include-group = "accelerate" }, "peft"]
+deepspeed = ["deepspeed"]           # ops compiled at first use (needs the ROCm compilers)
+diffusers = ["diffusers"]
+# Chapters
+inference = [{ include-group = "accelerate" }, { include-group = "diffusers" }]
+training = [{ include-group = "peft" }, { include-group = "deepspeed" }, "datasets"]
+profiling = ["tensorboard"]
+
+[tool.uv]
+package = false
+# Oldest uv accepted: align with the uv of `module load python` on Adastra.
+required-version = ">=0.8"
+# Adastra only: Linux x86_64.
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-rocm" }]
+pytorch-triton-rocm = [{ index = "pytorch-rocm" }]
+triton-rocm = [{ index = "pytorch-rocm" }]

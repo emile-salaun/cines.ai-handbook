@@ -1,6 +1,7 @@
 # Appendices
 
-Slurm cheat sheet, MI300A vs MI250X table, FAQ and troubleshooting, glossary.
+- [Build your own environment (uv)](own-env.md): other PyTorch or ROCm versions, extra packages.
 
 !!! cines "Planned"
-    This chapter is not written yet. See the [plan](https://github.com/emile-salaun/cines.ai-handbook#status).
+    Slurm cheat sheet, MI300A vs MI250X (including MI300A specifics: unified
+    memory, BLAS workaround), FAQ and troubleshooting, glossary.

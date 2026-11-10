@@ -3,16 +3,14 @@
 
 Each process reports its host, rank, GPU, number of usable cores and
 OMP_NUM_THREADS; rank 0 prints one line per process, then checks an
-all_reduce across all processes. Without torchrun (single_gpu.slurm), only
-the placement line is printed.
+all_reduce across all processes. Without torchrun, only the placement line
+is printed.
 
 MI300A: 4 GPUs (APUs) per node, OMP_NUM_THREADS=24 in the templates.
 MI250X: 8 GPUs (GCDs) per node, OMP_NUM_THREADS=8 in the templates.
 
 Usage (from the repository root):
-    sbatch slurm/single_gpu.slurm diagnostics/check_dist.py
-    sbatch slurm/single_node.slurm diagnostics/check_dist.py
-    sbatch slurm/multi_node.slurm diagnostics/check_dist.py
+    sbatch diagnostics/check_dist.sh               # all GPUs of one node
 Ref: Adastra doc, Software stack, libraries (Torch elastic, RCCL):
     https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 """

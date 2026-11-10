@@ -1,6 +1,7 @@
 # Annexes
 
-Aide-mémoire Slurm, tableau MI300A vs MI250X, FAQ et dépannage, glossaire.
+- [Construire votre propre environnement (uv)](own-env.md) : autres versions de PyTorch ou de ROCm, paquets supplémentaires.
 
 !!! cines "Prévu"
-    Ce chapitre n'est pas encore rédigé. Voir le [plan](https://github.com/emile-salaun/cines.ai-handbook#status).
+    Aide-mémoire Slurm, MI300A vs MI250X (dont les spécificités MI300A :
+    mémoire unifiée, contournement BLAS), FAQ et dépannage, glossaire.

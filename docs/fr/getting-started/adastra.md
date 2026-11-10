@@ -36,8 +36,8 @@ Tout ce dont un job a besoin (modèles, jeux de données, paquets Python) doit
 | Variable | Usage dans le guide | Purge |
 |---|---|---|
 | `$HOMEDIR` | le dépôt (`cines.ai-handbook/`), petits fichiers de configuration | jamais |
-| `$WORKDIR` | environnement IA, modèles Hugging Face (`$HF_HOME`), jeux de données (`$HANDBOOK_DATA`) | jamais |
-| `$SCRATCHDIR` | sorties des jobs (`$HANDBOOK_OUTPUT`), cache des jeux de données, checkpoints | fichiers inutilisés depuis 30 jours |
+| `$WORKDIR` | environnement IA, modèles Hugging Face (`$HF_HOME`), jeux de données (`$DATA_DIR`) | jamais |
+| `$SCRATCHDIR` | sorties des jobs (`$OUTPUT_DIR`), cache des jeux de données, checkpoints | fichiers inutilisés depuis 30 jours |
 | `$SHAREDWORKDIR`, `$SHAREDSCRATCHDIR` | idem, partagés dans le projet | comme ci-dessus |
 
 Vérifiez vos quotas avec `myproject -s <projet>`.

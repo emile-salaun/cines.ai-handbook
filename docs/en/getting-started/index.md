@@ -1,6 +1,7 @@
 # Getting started
 
-Discovering the Adastra GPU environment.
+Discovering the Adastra GPU environment. This chapter covers what you need
+for AI jobs; for everything else, see the [official Adastra documentation](https://dci.dci-gitlab.cines.fr/webextranet/).
 
 ## What you need
 
@@ -13,14 +14,15 @@ Discovering the Adastra GPU environment.
 <div class="cines-steps" markdown>
 
 1. [Adastra at a glance](adastra.md): node types, storage areas, what runs where.
-2. [Set up](setup.md): clone the repository, set your Slurm project once,
-   activate the AI environment, download a test model.
+2. [Set up your environment](setup.md): clone the repository, set your Slurm
+   project once, choose the prebuilt AI environment or your own (uv),
+   download a test model.
 3. [First job](first-job.md): one GPU, environment check.
-4. [Job templates](templates.md): which template for which job, MI250X overrides.
+4. [Write your job script](templates.md): copy a template and adapt it.
 5. [Interactive session](interactive.md): work on a compute node, look into a
    running job.
 6. [GPU and communication checks](checks.md): GPUs seen by each process and
-   RCCL, from one GPU to several nodes.
+   RCCL, on one GPU and one node.
 
 </div>
 

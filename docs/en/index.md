@@ -14,6 +14,12 @@ hide:
 
 # cines.ai - Handbook
 
+!!! warning "Work in progress"
+    This handbook is under development. It covers running AI workloads on
+    Adastra and is written for users new to the machine. For everything
+    else, and for the best use of Adastra, the reference is the
+    [official Adastra documentation](https://dci.dci-gitlab.cines.fr/webextranet/).
+
 ## Chapters
 
 <div class="grid cards cines-modules" markdown>
@@ -47,39 +53,24 @@ hide:
 
     ---
 
-    One GPU, DDP, LoRA/PEFT, FSDP, DeepSpeed, Accelerate.
+    One GPU, DDP, LoRA/PEFT, FSDP, DeepSpeed, Accelerate, bf16.
 
     [:octicons-arrow-right-24: Training](training/index.md)
 
--   **5 · Scaling out**
+-   **5 · Profiling**
 
     ---
 
-    Multi-node torchrun, RCCL over Slingshot, scaling efficiency.
+    PyTorch Profiler, rocprofv3.
 
-    [:octicons-arrow-right-24: Scaling out](scaling/index.md)
-
--   **6 · Performance & profiling**
-
-    ---
-
-    Binding, bf16, MI300A specifics, PyTorch Profiler, rocprofv3.
-
-    [:octicons-arrow-right-24: Performance](performance/index.md)
-
--   **7 · HPC workflows**
-
-    ---
-
-    Checkpoint and restart, job chains, sweeps, TensorBoard.
-
-    [:octicons-arrow-right-24: Workflows](workflows/index.md)
+    [:octicons-arrow-right-24: Profiling](profiling/index.md)
 
 -   **A · Appendices**
 
     ---
 
-    Slurm cheat sheet, MI300A vs MI250X, FAQ, glossary.
+    Build your own environment (uv), Slurm cheat sheet, MI300A vs MI250X,
+    FAQ, glossary.
 
     [:octicons-arrow-right-24: Appendices](appendices/index.md)
 
@@ -90,10 +81,10 @@ hide:
 <div class="cines-steps" markdown>
 
 1. **Set up once** on a login node: clone the repository, set your Slurm
-   project, `source env.sh`. → [Set up](getting-started/setup.md)
+   project, `source env.sh`. → [Set up your environment](getting-started/setup.md)
 2. **Run your first GPU job** and check the environment.
    → [First job](getting-started/first-job.md)
-3. **Check GPUs and communications** before scaling out.
+3. **Check GPUs and communications** before running on several GPUs.
    → [Checks](getting-started/checks.md)
 
 </div>

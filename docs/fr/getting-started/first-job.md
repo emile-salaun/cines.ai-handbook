@@ -32,10 +32,12 @@ Chaque journal commence et se termine de la même façon :
 ```text
 [job] single_gpu <jobid> started at <date>
 [job] nodes: <node> (1), GPUs per node: 1
-[env] HANDBOOK_ACCOUNT=<project>
-[env] AI environment: <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
+[env] ACCOUNT=<project>
+[env] Python environment (prebuilt): <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
 [env] HF_HOME=<WORKDIR>/hf
-[env] HF_HUB_OFFLINE=1  MIOPEN_USER_DB_PATH=/tmp/<user>-miopen-cache-<jobid>
+[env] DATA_DIR=<WORKDIR>/handbook/datasets
+[env] OUTPUT_DIR=<SCRATCHDIR>/handbook
+[env] HF_HUB_OFFLINE=1  MIOPEN_USER_DB_PATH=/tmp/<user>-miopen-<jobid>-<random>
 [run] python diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
 ...
 [job] ended at <date>, elapsed <hh:mm:ss>, exit code 0
@@ -47,12 +49,10 @@ Entre les deux, la sortie de `check_env.py` :
 - `GPU 0 matmul` : l'architecture est `gfx942` sur MI300A, `gfx90a` sur MI250X.
 - `offline load of Qwen/Qwen2.5-0.5B` : le modèle est lu depuis votre cache,
   sans internet.
-- `[WARN] aws-ofi-rccl plugin not found` : sans effet sur un nœud, bloquant
-  pour les jobs multi-nœuds (voir [vérifications](checks.md)).
 
 | Échec | Cause |
 |---|---|
-| `Invalid account` à la soumission | `env.sh` non sourcé, ou `HANDBOOK_ACCOUNT` non défini : voir [Installation](setup.md) |
+| `Invalid account` à la soumission | `env.sh` non sourcé, ou `ACCOUNT` non défini : voir [Configurer votre environnement](setup.md) |
 | `offline load` échoue | modèle non téléchargé : `bash setup/download_assets.sh` sur un nœud de connexion |
 | pas de fichier journal | job soumis hors de la racine du dépôt (`logs/` introuvable) |
 

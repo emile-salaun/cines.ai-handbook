@@ -1,5 +1,7 @@
 # Build the EN site, then the FR site into site/fr/, and publish both on
 # GitHub Pages (Settings > Pages > Source: GitHub Actions).
+# Pull requests only build (read-only token); the Pages write permissions are
+# given to the deploy job alone. Zensical version: docs/requirements.txt.
 name: docs
 
 on:
@@ -19,10 +21,7 @@ on:
       - "zensical.fr.toml"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+permissions: {}
 
 concurrency:
   group: pages
@@ -31,12 +30,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install zensical
+      - run: pip install -r docs/requirements.txt
       # EN first: its build wipes site/.
       - run: zensical build --clean
       - run: zensical build -f zensical.fr.toml
@@ -48,6 +51,9 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

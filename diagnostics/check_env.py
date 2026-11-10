@@ -10,10 +10,8 @@ MI300A: GPUs are reported as gfx942 (one APU per GPU, 4 per node).
 MI250X: GPUs are reported as gfx90a (one GCD per GPU, 8 per node).
 
 Usage (from the repository root):
-    sbatch slurm/single_gpu.slurm diagnostics/check_env.py [--model <repo_id>]
-    srun python diagnostics/check_env.py          # in an interactive allocation
-Example:
-    sbatch slurm/single_gpu.slurm diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
+    sbatch diagnostics/check_env.sh             # batch job, with --model Qwen/Qwen2.5-0.5B
+    srun python diagnostics/check_env.py [--model <repo_id>]   # in an interactive allocation
 Ref: Adastra doc, Software stack, libraries (PyTorch, aws-ofi-rccl, MIOpen):
     https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 """
@@ -30,7 +28,8 @@ import torch
 torch.backends.cuda.preferred_blas_library("cublas")
 
 ENV_VARS = (
-    "HANDBOOK_ACCOUNT",
+    "ACCOUNT",
+    "AI_ENV",
     "VIRTUAL_ENV",
     "HF_HOME",
     "HF_HUB_OFFLINE",
@@ -106,7 +105,8 @@ def check_model(repo_id):
     try:
         from transformers import AutoModel
 
-        model = AutoModel.from_pretrained(repo_id)
+        # safetensors only: no pickle (arbitrary code) when loading weights.
+        model = AutoModel.from_pretrained(repo_id, use_safetensors=True)
         n_params = sum(p.numel() for p in model.parameters()) / 1e6
         check(True, f"offline load of {repo_id}", f"{n_params:.0f}M parameters")
     except Exception as exc:  # report the error as a failed check
