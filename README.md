@@ -65,8 +65,7 @@ cines.ai-handbook/
 ├── overrides/         # CINES branding: CSS, fonts, logos, home page
 ├── zensical.toml      # EN site (default) -> site/
 ├── zensical.fr.toml   # FR site           -> site/fr/
-└── .github/           # docs.yml: builds EN then FR, publishes on GitHub Pages;
-                       # dependabot.yml: update proposals for actions and Zensical
+└── .github/           # docs.yml: builds EN then FR, publishes on GitHub Pages
 ```
 
 Folders are by topic; the reading order comes from the site navigation.

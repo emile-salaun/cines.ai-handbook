@@ -1,2 +1,2 @@
-# Site build (local preview and CI). Updated by Dependabot.
+# Site build (local preview and CI).
 zensical==0.1.0
