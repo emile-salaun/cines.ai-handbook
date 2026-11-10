@@ -59,7 +59,6 @@ features = [
   "navigation.indexes",
   "navigation.instant",
   "navigation.path",
-  "navigation.prune",           # only the current chapter is expanded
   "navigation.top",
   "navigation.tracking",
   "search.highlight",

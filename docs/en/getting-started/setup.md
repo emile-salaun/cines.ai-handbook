@@ -72,7 +72,7 @@ Then choose your Python environment:
         | Group | Installs |
         |---|---|
         | `inference` (chapter 3) | `accelerate`, `diffusers` |
-        | `training` (chapter 4) | `peft`, `deepspeed`, `datasets` |
+        | `training` (chapter 4) | `peft`, `deepspeed` |
         | `profiling` (chapter 5) | `tensorboard` |
         | `accelerate` | Accelerate |
         | `peft` | PEFT, Accelerate |

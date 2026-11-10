@@ -35,6 +35,7 @@ dependencies = [
     "triton-rocm>=3.6.0 ; sys_platform == 'linux'",
     "transformers>=4.57",
     "huggingface_hub>=0.34",        # provides the `hf` command
+    "datasets>=3.0",                # chapter 2: datasets loaded by path, offline
 ]
 
 [dependency-groups]
@@ -45,7 +46,7 @@ deepspeed = ["deepspeed"]           # ops compiled at first use (needs the ROCm 
 diffusers = ["diffusers"]
 # Chapters
 inference = [{ include-group = "accelerate" }, { include-group = "diffusers" }]
-training = [{ include-group = "peft" }, { include-group = "deepspeed" }, "datasets"]
+training = [{ include-group = "peft" }, { include-group = "deepspeed" }]
 profiling = ["tensorboard"]
 
 [tool.uv]

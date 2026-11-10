@@ -5,20 +5,15 @@ login node, then read offline by the jobs.
 
 ## Requirements
 
-=== "Prebuilt"
+Both environments already have the packages of this chapter: the prebuilt
+environment, and the base of the uv environment (no group).
 
-    Nothing to add: the prebuilt environment has `hf`, Transformers and
-    Datasets.
-
-=== "uv"
-
-    The base environment is enough (no group). On a login node, from the
-    repository root:
-
-    ```bash
-    module load python
-    uv sync --locked
-    ```
+| Package | Used for |
+|---|---|
+| [`huggingface_hub`](https://huggingface.co/docs/huggingface_hub) | `hf` command: download, cache, login |
+| [`transformers`](https://huggingface.co/docs/transformers) | load a model and its tokenizer (`from_pretrained`) |
+| [`datasets`](https://huggingface.co/docs/datasets) | load a dataset by path (`load_dataset`), Arrow cache |
+| [`safetensors`](https://huggingface.co/docs/safetensors) | weight format read with `use_safetensors=True` (installed with Transformers) |
 
 ## Where data goes
 
