@@ -1,10 +1,7 @@
 # =============================================================================
-# cines.ai - Handbook — English site (default)
-#   French version: zensical.fr.toml, built AFTERWARDS into site/fr/
-#   (this build wipes site/).
+# cines.ai - Handbook — site configuration
 #   Local preview:  zensical serve
-#   Both files share everything except [project] paths, the language and the
-#   UI labels: keep the rest in sync.
+#   Build:          zensical build --clean   (-> site/)
 # =============================================================================
 
 [project]
@@ -31,7 +28,12 @@ nav = [
     { "Interactive session" = "getting-started/interactive.md" },
     { "GPU and communication checks" = "getting-started/checks.md" },
   ] },
-  { "2 · Data & models" = "data-models/index.md" },
+  { "2 · Data & models" = [
+    "data-models/index.md",
+    { "Download a model" = "data-models/models.md" },
+    { "Get a dataset" = "data-models/datasets.md" },
+    { "Use them in a job" = "data-models/offline.md" },
+  ] },
   { "3 · Inference" = "inference/index.md" },
   { "4 · Training & fine-tuning" = "training/index.md" },
   { "5 · Profiling" = "profiling/index.md" },
@@ -57,7 +59,7 @@ features = [
   "navigation.indexes",
   "navigation.instant",
   "navigation.path",
-  "navigation.sections",
+  "navigation.prune",           # only the current chapter is expanded
   "navigation.top",
   "navigation.tracking",
   "search.highlight",
@@ -81,13 +83,6 @@ toggle.name = "Switch to light mode"
 
 [project.theme.icon]
 repo = "fontawesome/brands/github"
-
-# Language selector (absolute links: the site_url domain is prepended)
-[project.extra]
-alternate = [
-  { name = "English", link = "/cines.ai-handbook/", lang = "en" },
-  { name = "Français", link = "/cines.ai-handbook/fr/", lang = "fr" },
-]
 
 [[project.extra.social]]
 icon = "fontawesome/solid/book"

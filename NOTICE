@@ -2,3 +2,9 @@ cines.ai-handbook
 Copyright 2026 CINES (Centre Informatique National de l'Enseignement Supérieur)
 
 Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The CINES name and logos (overrides/assets/logo/) are trademarks of CINES and
+are not covered by the Apache License 2.0: all rights reserved.
+
+The Poppins and Lato fonts (overrides/assets/fonts/) are licensed under the
+SIL Open Font License, Version 1.1 (see overrides/assets/fonts/OFL.txt).
