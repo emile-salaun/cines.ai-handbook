@@ -4,7 +4,7 @@ Reference guide for AI on **Adastra** (CINES): the documentation and the
 ready-to-run scripts it describes, in one repository. MI300A nodes by default,
 MI250X through command-line overrides.
 
-Site: <https://emile-salaun.github.io/cines.ai-handbook/>
+Handbook: <https://emile-salaun.github.io/cines.ai-handbook/>
 
 > **Work in progress.** This handbook is under development. It covers running AI
 > workloads on Adastra and is written for users new to the machine. For everything
@@ -16,7 +16,6 @@ Site: <https://emile-salaun.github.io/cines.ai-handbook/>
 - An Adastra account and a project with GPU hours (`myproject -l`).
 - The prebuilt AI environment of Adastra (loaded by `env.sh`), or the handbook's
   uv environment (`uv` from `module load python`).
-- To preview the site only: Python ≥ 3.10 and `pip install -r docs/requirements.txt`, on any machine.
 
 ## Installation (Adastra login node)
 
@@ -58,31 +57,11 @@ cines.ai-handbook/
 ├── inference/         # chapter 3
 ├── training/          # chapter 4
 ├── profiling/         # chapter 5
-├── logs/              # job logs (kept empty in git)
-├── docs/en/           # site pages
-├── docs/requirements.txt  # site build dependency (pinned Zensical)
-├── overrides/         # CINES branding: CSS, fonts, logos, home page
-├── zensical.toml      # site configuration -> site/
-└── .github/           # docs.yml: builds the site, publishes on GitHub Pages
+└── logs/              # job logs (kept empty in git)
 ```
 
-Folders are by topic; the reading order comes from the site navigation.
-
-## Site preview
-
-```bash
-pip install -r docs/requirements.txt
-zensical serve      # http://localhost:8000
-```
-
-Full build, as in CI:
-
-```bash
-zensical build --clean
-```
-
-The CINES logos go in `overrides/assets/logo/` (`cines-logo-inverse.svg`,
-`favicon.svg`, `cines-logo-baseline-inverse.svg`), unchanged.
+Folders are by topic; the reading order is that of the chapters of the
+[handbook](https://emile-salaun.github.io/cines.ai-handbook/).
 
 ## Status
 
