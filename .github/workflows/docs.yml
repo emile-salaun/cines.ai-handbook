@@ -43,7 +43,7 @@ jobs:
       # EN first: its build wipes site/.
       - run: zensical build --clean
       - run: zensical build -f zensical.fr.toml
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
