@@ -34,7 +34,7 @@ Submit from the repository root: the script sources `env.sh` and writes to
 | `--gpus-per-node` (`single_node`) | all GPUs of the node | `4` | `8` |
 | `--time` | maximum run time, `HH:MM:SS`; the job is stopped after it | | |
 | `--job-name` | job name, also the log name `logs/<name>_<job id>.out` | | |
-| `run python ...` | your script and its arguments | | |
+| last line (`python ...`, `torchrun ...`) | your script and its arguments | | |
 
 The other lines stay as they are:
 
@@ -44,8 +44,6 @@ The other lines stay as they are:
 - `--gpus-per-node=1` (`single_gpu`): on shared nodes, a job must ask for at
   least one GPU.
 - `source env.sh`: project, Python environment, offline mode, MIOpen cache.
-- `run`: prints a start and an end line in the log, with the elapsed time and
-  the exit code.
 
 ## Before submitting
 
@@ -63,6 +61,7 @@ sbatch jobs/my_job.sh        # prints the job id
 squeue --me                  # state: PD (pending), R (running)
 tail -f logs/<name>_<jobid>.out
 scancel <jobid>              # stop it
+sacct -X -j <jobid> -o JobID,State,ExitCode,Elapsed   # once ended: state, exit code, run time
 ```
 
 Options on the `sbatch` command line win over the `#SBATCH` lines, for a

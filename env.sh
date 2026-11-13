@@ -132,12 +132,14 @@ if [[ -n "${SLURMD_NODENAME:-}" ]]; then
     # Compute nodes have no internet access: models must be in HF_HOME already.
     export HF_HUB_OFFLINE=1 UV_OFFLINE=1
     # MIOpen cache in node-local /tmp, one per job (Adastra doc, MIOpen section).
-    # Random name: on shared nodes, another user cannot create it in advance.
-    # run creates it (mode 700) and removes it at the end of the job.
-    _rand="$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
-    export MIOPEN_USER_DB_PATH="/tmp/${USER}-miopen-${SLURM_JOB_ID:-step}-${_rand}"
-    export MIOPEN_CUSTOM_CACHE_DIR="${MIOPEN_USER_DB_PATH}"
-    unset _rand
+    # mktemp: random name, mode 700, so another user cannot create it in advance.
+    if _miopen="$(mktemp -d "/tmp/${USER}-miopen-${SLURM_JOB_ID:-step}-XXXXXXXX")"; then
+        export MIOPEN_USER_DB_PATH="${_miopen}" MIOPEN_CUSTOM_CACHE_DIR="${_miopen}"
+    else
+        unset MIOPEN_USER_DB_PATH MIOPEN_CUSTOM_CACHE_DIR
+        echo "[env] WARNING: cannot create a MIOpen cache in /tmp; MIOpen uses its default in \$HOME." >&2
+    fi
+    unset _miopen
 elif [[ -n "${SLURM_JOB_ID:-}" ]]; then
     # salloc shell: it stays online (downloads work), the commands it starts
     # with srun run offline on the compute node (SLURM_EXPORT_ENV = srun --export).
@@ -150,41 +152,13 @@ env_summary() {
     echo "[env] Python environment (${AI_ENV}): ${VIRTUAL_ENV:-<none>}"
     echo "[env] HF_HOME=${HF_HOME}"
     if [[ -n "${SLURMD_NODENAME:-}" ]]; then
-        echo "[env] HF_HUB_OFFLINE=${HF_HUB_OFFLINE}  MIOPEN_USER_DB_PATH=${MIOPEN_USER_DB_PATH}"
+        echo "[env] HF_HUB_OFFLINE=${HF_HUB_OFFLINE}  MIOPEN_USER_DB_PATH=${MIOPEN_USER_DB_PATH:-<default>}"
     elif [[ -n "${SLURM_JOB_ID:-}" ]]; then
         echo "[env] srun steps: SLURM_EXPORT_ENV=${SLURM_EXPORT_ENV}"
     fi
 }
 
-# Runs a command between a start and an end line (date, elapsed time, exit code).
-#   run python script.py --arg 1
-run() {
-    local start=${SECONDS} rc=0
-    echo "[job] ${SLURM_JOB_NAME:-job} ${SLURM_JOB_ID:-} started at $(date '+%F %T')"
-    echo "[job] nodes: ${SLURM_JOB_NODELIST:-$(hostname)} (${SLURM_NNODES:-1}), GPUs per node: ${SLURM_GPUS_ON_NODE:-0}"
-    env_summary
-    # No -p: fails if the directory already exists (not created by this job).
-    if [[ -n "${MIOPEN_USER_DB_PATH:-}" ]] && ! mkdir -m 700 "${MIOPEN_USER_DB_PATH}"; then
-        echo "[job] ERROR: cannot create ${MIOPEN_USER_DB_PATH}" >&2
-        return 1
-    fi
-    echo "[run] $*"
-    "$@" || rc=$?
-    if [[ -n "${MIOPEN_USER_DB_PATH:-}" ]]; then
-        if ((${SLURM_NNODES:-1} > 1)); then
-            srun --ntasks-per-node=1 --overlap rm -rf "${MIOPEN_USER_DB_PATH}" || true
-        else
-            rm -rf "${MIOPEN_USER_DB_PATH}"
-        fi
-    fi
-    echo "[job] ended at $(date '+%F %T'), elapsed $(date -u -d "@$((SECONDS - start))" +%T), exit code ${rc}"
-    return "${rc}"
-}
-
-# Summary when sourced by hand (batch jobs print it through run).
-if [[ -z "${SLURMD_NODENAME:-}" || -t 1 ]]; then
-    env_summary
-fi
+env_summary
 unset _root
 
 # --- RCCL debug (uncomment to check that Slingshot is used) ---------------------

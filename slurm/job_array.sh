@@ -33,4 +33,4 @@ read -ra task_args <<<"${line}"
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"    # CPU threads = allocated cores
 
 # EDIT: your script; the arguments of this task are appended.
-run python my_script.py "${task_args[@]}"
+python my_script.py "${task_args[@]}"

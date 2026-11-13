@@ -122,3 +122,4 @@ pymdownx.superfences.custom_fences = [
 ]
 pymdownx.tabbed.alternate_style = true
 pymdownx.tasklist.custom_checkbox = true
+pymdownx.tasklist.clickable_checkbox = true

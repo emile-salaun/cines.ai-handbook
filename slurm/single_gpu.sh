@@ -21,5 +21,5 @@ source env.sh                         # project, Python environment, offline mod
 
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"    # CPU threads = allocated cores
 
-# EDIT: your command. `run` adds start and end lines (elapsed time) to the log.
-run python my_script.py --my-arg 1
+# EDIT: your command.
+python my_script.py --my-arg 1

@@ -20,4 +20,4 @@ set -euo pipefail
 source env.sh
 
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
-run python diagnostics/check_data.py
+python diagnostics/check_data.py

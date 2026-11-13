@@ -20,4 +20,4 @@ set -euo pipefail
 source env.sh
 
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
-run python inference/generate_hf.py
+python inference/generate_hf.py

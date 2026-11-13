@@ -164,8 +164,7 @@ Then `which python` points into your environment.
 | `HF_TOKEN_PATH` | `~/.cache/huggingface/token` | everywhere | — (keep it in `$HOME`) | `export HF_TOKEN_PATH=$HOME/.cache/huggingface/token` |
 | `SLURM_EXPORT_ENV` | `ALL,HF_HUB_OFFLINE=1,UV_OFFLINE=1` | `salloc` shell | — | `srun --export=ALL,HF_HUB_OFFLINE=1,UV_OFFLINE=1 <command>` |
 | `HF_HUB_OFFLINE`, `UV_OFFLINE` | `1` | compute nodes | — | in the job script: `export HF_HUB_OFFLINE=1 UV_OFFLINE=1` |
-| `MIOPEN_USER_DB_PATH`, `MIOPEN_CUSTOM_CACHE_DIR` | `/tmp/$USER-miopen-<jobid>-<random>` | compute nodes | — | in the job script: `export MIOPEN_USER_DB_PATH=$(mktemp -d /tmp/$USER-miopen-XXXXXX) MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_USER_DB_PATH`, `rm -rf` it at the end |
-| `run <command>` (function) | — | job scripts | — | run the command itself |
+| `MIOPEN_USER_DB_PATH`, `MIOPEN_CUSTOM_CACHE_DIR` | `/tmp/$USER-miopen-<jobid>-<random>` | compute nodes | — | in the job script: `export MIOPEN_USER_DB_PATH=$(mktemp -d /tmp/$USER-miopen-XXXXXX) MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_USER_DB_PATH` |
 | `env_summary` (function) | — | everywhere | — | `echo $SBATCH_ACCOUNT $VIRTUAL_ENV $HF_HOME` |
 
 - **Where:** *everywhere* is the login node, the `salloc` shell and the

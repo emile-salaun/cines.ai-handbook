@@ -59,6 +59,8 @@ Ref: [Adastra doc, Software stack, libraries](https://dci.dci-gitlab.cines.fr/we
 
 ## Reference result
 
+The `Elapsed` value of `sacct -X -j <jobid> -o Elapsed`.
+
 | Partition | Test | Elapsed | Status |
 |---|---|---|---|
 | MI300A | one node | — | to be measured |

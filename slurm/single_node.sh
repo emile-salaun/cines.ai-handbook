@@ -23,5 +23,4 @@ cores="$(lscpu --parse=CORE | grep -v '^#' | sort -u | wc -l)"
 export OMP_NUM_THREADS=$((cores / SLURM_GPUS_ON_NODE))
 
 # EDIT: your script. torchrun starts one process per GPU of the node.
-# `run` adds start and end lines (elapsed time) to the log.
-run torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE}" my_script.py --my-arg 1
+torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE}" my_script.py --my-arg 1

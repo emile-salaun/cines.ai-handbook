@@ -20,4 +20,4 @@ source env.sh
 cores="$(lscpu --parse=CORE | grep -v '^#' | sort -u | wc -l)"
 export OMP_NUM_THREADS=$((cores / SLURM_GPUS_ON_NODE))
 
-run torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE}" diagnostics/check_dist.py
+torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE}" diagnostics/check_dist.py

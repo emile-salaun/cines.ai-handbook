@@ -25,8 +25,8 @@ MASTER_ADDR="$(scontrol show hostnames "${SLURM_JOB_NODELIST}" | head -n 1)"
 cores="$(lscpu --parse=CORE | grep -v '^#' | sort -u | wc -l)"
 export OMP_NUM_THREADS=$((cores / SLURM_GPUS_ON_NODE))
 
-# EDIT: your script (last line). `run` adds start and end lines to the log.
-run srun --ntasks-per-node=1 --gpus-per-task="${SLURM_GPUS_ON_NODE}" \
+# EDIT: your script (last line).
+srun --ntasks-per-node=1 --gpus-per-task="${SLURM_GPUS_ON_NODE}" \
     --cpu-bind=none --mem-bind=none --label \
     torchrun --nnodes="${SLURM_NNODES}" --nproc_per_node="${SLURM_GPUS_ON_NODE}" \
     --rdzv-id="${SLURM_JOB_ID}" --rdzv-backend=c10d \
