@@ -1,8 +1,4 @@
-# =============================================================================
-# cines.ai - Handbook — site configuration
-#   Local preview:  zensical serve
-#   Build:          zensical build --clean   (-> site/)
-# =============================================================================
+# zensical.toml - Site configuration. Preview: zensical serve; build: zensical build --clean.
 
 [project]
 site_name = "cines.ai - Handbook"

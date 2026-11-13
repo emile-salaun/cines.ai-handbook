@@ -1,20 +1,10 @@
 #!/usr/bin/env python3
-"""Offline data check: load a model and a dataset without internet (single process).
+"""Offline check: load a model and a dataset without internet, sizes and load times.
 
-Reads the model from HF_HOME and the dataset from a local directory (DATA_DIR,
-DSDIR or your own copy), tokenizes a few samples and prints the paths, sizes
-and load times. Download the assets first on a login node with
-setup/download_assets.sh. Exits with status 1 if a check fails.
-
-Same assets for MI300A and MI250X; only the GPU copy time differs (MI300A:
-unified memory, MI250X: copy over the host link).
-
-Usage (from the repository root):
-    sbatch diagnostics/check_data.sh            # batch job, handbook defaults
-    srun python diagnostics/check_data.py [--model <repo_id>] [--dataset <dir>]
-        [--config <name>] [--samples <n>]       # in an interactive allocation
-Ref: Adastra doc, Data storage and transfers:
-    https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html
+Usage: sbatch diagnostics/check_data.sh, or in an allocation:
+    srun python diagnostics/check_data.py [--model <repo_id>] [--dataset <dir>] [--config <name>]
+Same on MI300A and MI250X. Exit code 1 if a check fails.
+Ref: https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html
 """
 
 import argparse
@@ -27,7 +17,7 @@ import torch
 # MI300A: slow bf16 GEMMs with hipBLASLt; TORCH_BLAS_PREFER_HIPBLASLT=0 is not enough.
 torch.backends.cuda.preferred_blas_library("cublas")
 
-ENV_VARS = ("HF_HOME", "HF_HUB_OFFLINE", "HF_DATASETS_CACHE", "DATA_DIR", "DSDIR")
+ENV_VARS = ("HF_HOME", "HF_HUB_OFFLINE", "HF_DATASETS_CACHE", "WORKDIR", "DSDIR")
 NOT_CACHED = "not in HF_HOME: hf download <repo_id> on a login node, after source env.sh"
 HINTS = {
     "LocalEntryNotFoundError": NOT_CACHED,
@@ -50,15 +40,12 @@ def fail(label, exc):
 
 
 def parse_args():
-    data_dir = os.environ.get("DATA_DIR", "")
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--model", default="Qwen/Qwen2.5-0.5B", help="Hugging Face model id")
     parser.add_argument(
-        "--dataset",
-        default=os.path.join(data_dir, "wikitext"),
-        help="local dataset directory (default: $DATA_DIR/wikitext)",
+        "--dataset", help="local dataset directory (default: $WORKDIR/datasets/wikitext)"
     )
     parser.add_argument(
         "--config", default="wikitext-2-raw-v1", help="dataset configuration (default: %(default)s)"
@@ -136,13 +123,24 @@ def check_dataset(path, config, n_samples, tokenizer):
     check(True, "tokenization", detail)
 
 
+def default_dataset():
+    """$WORKDIR/datasets/wikitext, or None (with a [FAIL] line) without WORKDIR."""
+    workdir = os.environ.get("WORKDIR")
+    if workdir:
+        return os.path.join(workdir, "datasets", "wikitext")
+    check(False, "dataset path", "WORKDIR is not set (not on Adastra?): give --dataset <dir>")
+    return None
+
+
 def main():
     args = parse_args()
     for var in ENV_VARS:
         print(f"  {var}={os.environ.get(var, '<unset>')}")
     check(os.environ.get("HF_HUB_OFFLINE") == "1", "HF_HUB_OFFLINE=1")
+    dataset = args.dataset or default_dataset()
     tokenizer = check_model(args.model)
-    check_dataset(args.dataset, args.config, args.samples, tokenizer)
+    if dataset:
+        check_dataset(dataset, args.config, args.samples, tokenizer)
     if failures:
         print(f"{len(failures)} check(s) failed: {', '.join(failures)}")
         sys.exit(1)

@@ -1,28 +1,9 @@
-# =============================================================================
-# pyproject.toml - The handbook's uv environment (alternative to the prebuilt
-# AI environment). Not a Python package. Exact versions: uv.lock. Python
-# version: .python-version.
-#
-# Install, from the repository root on a login node (uv comes with the
-# `python` module; the environment is .venv in the repository):
-#   module load python
-#   uv sync --locked                       # base: PyTorch, Transformers, HF Hub
-#   uv sync --locked --group training      # base + one group
-#   uv sync --locked --group peft --group diffusers   # base + several groups
-# Each `uv sync` installs exactly what it is given: groups not listed are removed.
-#
-# Groups: one per chapter (inference, training, profiling) and one per
-# framework (accelerate, peft, deepspeed, diffusers); a chapter group includes
-# the framework groups it needs. One uv.lock: same versions in every group.
-#
-# Maintainers, after changing this file: `uv lock`, test the chapter groups on
-# MI300A and MI250X, commit uv.lock.
-# PyTorch comes from the PyTorch ROCm index (wheels with their own ROCm
-# libraries); everything else from PyPI. Same wheels for MI300A (gfx942) and
-# MI250X (gfx90a).
-# Ref: uv, Using uv with PyTorch: https://docs.astral.sh/uv/guides/integration/pytorch/
-#      uv, Dependency groups: https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups
-# =============================================================================
+# pyproject.toml - The handbook's uv environment (not a Python package). Exact
+# versions: uv.lock. Same wheels for MI300A and MI250X.
+# Usage (login node, repository root): module load python && uv sync --locked [--group <name>]
+#   each uv sync installs the base and only the groups it names.
+# Maintainers: after a change, uv lock, test on MI300A and MI250X, commit uv.lock.
+# Ref: https://docs.astral.sh/uv/guides/integration/pytorch/
 [project]
 name = "cines-ai-handbook"
 version = "0.1.0"

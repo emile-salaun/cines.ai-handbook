@@ -1,19 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# diagnostics/check_data.sh - Ready-to-run job: offline load of the handbook
-# model and dataset on one GPU, with sizes and load times
-# (diagnostics/check_data.py).
-# Built from slurm/single_gpu.sh.
-#
-# Usage (from the repository root, after `source env.sh` and
-# `bash setup/download_assets.sh`):
-#   sbatch diagnostics/check_data.sh
-# MI250X:
-#   sbatch --constraint=MI250 --cpus-per-task=8 diagnostics/check_data.sh
-# Log: logs/check_data_<job id>.out
-# Ref: Adastra doc, Data storage and transfers:
-#      https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html
-# =============================================================================
+# diagnostics/check_data.sh - Ready-to-run job: offline load of the handbook model and
+# dataset, one GPU.
+# Usage: sbatch diagnostics/check_data.sh
+#        sbatch --constraint=MI250 --cpus-per-task=8 diagnostics/check_data.sh   # MI250X
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html
 #SBATCH --account=<project>
 #SBATCH --constraint=MI300
 #SBATCH --nodes=1

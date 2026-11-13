@@ -1,18 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# slurm/multi_node.sh - Template: torchrun on several nodes; one srun task per
-# node, torchrun starts one process per GPU (c10d rendezvous on the first node).
-#
-# Copy it, adapt the lines marked EDIT, submit from the repository root:
-#   mkdir -p jobs && cp slurm/multi_node.sh jobs/my_job.sh
-#   sbatch jobs/my_job.sh
-# MI250X: --constraint=MI250 and --gpus-per-node=8.
-# To check that RCCL uses Slingshot, submit with
-#   NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET sbatch jobs/my_job.sh
-# and look for "NET/OFI Selected Provider is cxi" in the log.
-# Ref: Adastra doc, Software stack, libraries (Torch elastic, aws-ofi-rccl):
-#      https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
-# =============================================================================
+# slurm/multi_node.sh - Template: torchrun on several nodes, one srun task per node.
+# Usage: mkdir -p jobs && cp slurm/multi_node.sh jobs/my_job.sh, adapt the EDIT lines,
+#        sbatch jobs/my_job.sh
+# MI250X: --constraint=MI250 --gpus-per-node=8
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 #SBATCH --account=<project>           # leave as is: env.sh sets your project (SBATCH_ACCOUNT)
 #SBATCH --constraint=MI300            # EDIT: node type, MI300 (MI300A) or MI250 (MI250X)
 #SBATCH --nodes=2                     # EDIT: number of nodes

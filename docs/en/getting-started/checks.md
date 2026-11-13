@@ -3,6 +3,9 @@
 **Goal:** before any performance measurement, check that each process uses
 its own GPU and that RCCL works between the GPUs of a node.
 
+**Before you start:** a login shell in the repository, after `source env.sh`
+(see [Set up your environment](setup.md)).
+
 ## One node
 
 `diagnostics/check_dist.sh` is built from the [template](templates.md)
@@ -47,6 +50,10 @@ One line per process, then the all_reduce result:
   memory and compute.
 - `omp`: the node's physical cores divided by its GPUs.
 - `OK: all_reduce`: RCCL works between the GPUs of the node.
+
+| Failure | Cause |
+|---|---|
+| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
 
 Ref: [Adastra doc, Software stack, libraries](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
 

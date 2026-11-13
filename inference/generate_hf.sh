@@ -1,18 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# inference/generate_hf.sh - Ready-to-run job: batch text generation with
-# Transformers on one GPU (inference/generate_hf.py).
-# Built from slurm/single_gpu.sh.
-#
-# Usage (from the repository root, after `source env.sh` and
-# `bash setup/download_assets.sh`):
-#   sbatch inference/generate_hf.sh
-# MI250X:
-#   sbatch --constraint=MI250 --cpus-per-task=8 inference/generate_hf.sh
-# Log: logs/generate_hf_<job id>.out; answers: $OUTPUT_DIR/generate_hf/<job id>.jsonl
-# Ref: Transformers, Generation:
-#      https://huggingface.co/docs/transformers/main_classes/text_generation
-# =============================================================================
+# inference/generate_hf.sh - Ready-to-run job: batch generation with Transformers on
+# one GPU.
+# Usage: sbatch inference/generate_hf.sh
+#        sbatch --constraint=MI250 --cpus-per-task=8 inference/generate_hf.sh   # MI250X
+# Ref: https://huggingface.co/docs/transformers/main_classes/text_generation
 #SBATCH --account=<project>
 #SBATCH --constraint=MI300
 #SBATCH --nodes=1

@@ -3,6 +3,10 @@
 **Goal:** generate answers to a list of prompts with Transformers on one GPU,
 and measure the throughput.
 
+**Before you start:** a login shell in the repository, after `source env.sh`
+(see [Set up your environment](../getting-started/setup.md)); the model
+downloaded ([Download a model](../data-models/models.md)).
+
 Transformers runs any model of the Hub with a few lines of Python: the
 simplest way to test a model, compute outputs for an evaluation, or check a
 checkpoint after training. For large amounts of text, [vLLM](index.md) is
@@ -56,6 +60,7 @@ answers: <SCRATCHDIR>/handbook/generate_hf/<jobid>.jsonl
 | `LocalEntryNotFoundError` | model not downloaded: `hf download <repo_id>` on a login node (see [Download a model](../data-models/models.md)) |
 | `out of memory` | batch or model too large for the GPU: lower `--batch-size`; on MI250X, a GCD has 64 GB |
 | `device=cpu` and `[WARN] no GPU visible` | run with `srun` inside an allocation, or in a job |
+| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
 
 ## Reference result
 

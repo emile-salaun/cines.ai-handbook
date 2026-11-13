@@ -2,6 +2,9 @@
 
 **Goal:** write the batch script of your own job, starting from a template.
 
+**Before you start:** a login shell in the repository, after `source env.sh`
+(see [Set up your environment](setup.md)).
+
 The handbook examples come with ready-to-run scripts (`diagnostics/*.sh`).
 For your own work, copy a template from `slurm/` and adapt it: every line to
 check is marked `EDIT`.
@@ -64,5 +67,10 @@ scancel <jobid>              # stop it
 
 Options on the `sbatch` command line win over the `#SBATCH` lines, for a
 one-off change: `sbatch --time=01:00:00 jobs/my_job.sh`.
+
+| Failure | Cause |
+|---|---|
+| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: `source env.sh`, check the `[env] ACCOUNT=` line |
+| no log file | submitted outside the repository root (`logs/` not found) |
 
 Ref: [Adastra doc, Job submission](https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html).

@@ -1,8 +1,6 @@
-# Build the site and publish it on GitHub Pages
-# (Settings > Pages > Source: GitHub Actions) from the dev branch
-# (allow dev in Settings > Environments > github-pages > Deployment branches).
-# Pull requests only build (read-only token); the Pages write permissions are
-# given to the deploy job alone. Zensical version: docs/requirements.txt.
+# Builds the site; on push to dev, publishes it on GitHub Pages (Settings > Pages > Source:
+# GitHub Actions; allow dev in the github-pages environment). Pull requests only build.
+# Zensical version: docs/requirements.txt.
 name: docs
 
 on:

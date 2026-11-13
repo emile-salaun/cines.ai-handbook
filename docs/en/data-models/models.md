@@ -3,6 +3,9 @@
 **Goal:** put a model from the Hugging Face Hub in your cache (`$HF_HOME`), so
 that jobs can load it offline.
 
+**Before you start:** a login shell in the repository, after `source env.sh`
+(see [Set up your environment](../getting-started/setup.md)).
+
 ## Command
 
 On a login node, from the repository root, after `source env.sh` (it sets
@@ -44,7 +47,7 @@ model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-1.5B", use_safetensor
 |---|---|
 | `hf: command not found` | environment not active: `source env.sh` |
 | path under `~/.cache/huggingface` | `env.sh` not sourced: `HF_HOME` is not set; download again after `source env.sh` |
-| error about offline mode | shell inside an allocation or a job (`echo $HF_HUB_OFFLINE` prints `1`): download from a plain login shell |
+| error about offline mode | command run on a compute node (in a job, or with `srun`), or `HF_HUB_OFFLINE=1` set in your shell: download from a login shell (the `salloc` shell works too) |
 | `401` or `403`, `GatedRepoError` | gated model: see below |
 | `Disk quota exceeded` | see [Disk space](#disk-space) |
 

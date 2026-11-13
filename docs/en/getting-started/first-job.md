@@ -2,6 +2,10 @@
 
 **Goal:** run a Python script on one GPU and check the environment.
 
+**Before you start:** a login shell in the repository, after `source env.sh`,
+and the handbook example assets downloaded (see [Set up your
+environment](setup.md)).
+
 `diagnostics/check_env.sh` is a ready-to-run batch script, built from the
 [template](templates.md) `slurm/single_gpu.sh`. Open it: every line is
 explained in the template.
@@ -38,8 +42,6 @@ Every log starts and ends the same way:
 [env] ACCOUNT=<project>
 [env] Python environment (prebuilt): <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
 [env] HF_HOME=<WORKDIR>/hf
-[env] DATA_DIR=<WORKDIR>/handbook/datasets
-[env] OUTPUT_DIR=<SCRATCHDIR>/handbook
 [env] HF_HUB_OFFLINE=1  MIOPEN_USER_DB_PATH=/tmp/<user>-miopen-<jobid>-<random>
 [run] python diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
 ...
@@ -55,7 +57,7 @@ In between, the output of `check_env.py`:
 
 | Failure | Cause |
 |---|---|
-| `Invalid account` at submission | `env.sh` not sourced, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
+| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
 | `offline load` fails | model not downloaded: `bash setup/download_assets.sh` on a login node |
 | no log file | submitted outside the repository root (`logs/` not found) |
 

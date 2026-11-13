@@ -1,18 +1,8 @@
 #!/usr/bin/env python3
-"""Process placement and RCCL all_reduce check for the Slurm templates.
+"""Process placement and RCCL all_reduce check, one process per GPU (torchrun).
 
-Each process reports its host, rank, GPU, number of usable cores and
-OMP_NUM_THREADS; rank 0 prints one line per process, then checks an
-all_reduce across all processes. Without torchrun, only the placement line
-is printed.
-
-MI300A: 4 GPUs (APUs) per node, OMP_NUM_THREADS=24 in the templates.
-MI250X: 8 GPUs (GCDs) per node, OMP_NUM_THREADS=8 in the templates.
-
-Usage (from the repository root):
-    sbatch diagnostics/check_dist.sh               # all GPUs of one node
-Ref: Adastra doc, Software stack, libraries (Torch elastic, RCCL):
-    https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
+Usage: sbatch diagnostics/check_dist.sh   (MI250X: --constraint=MI250 --gpus-per-node=8)
+Ref: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 """
 
 import os

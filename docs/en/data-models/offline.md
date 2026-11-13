@@ -3,13 +3,18 @@
 **Goal:** check that a job loads the model and the dataset without internet,
 and see how long it takes.
 
+**Before you start:** a login shell in the repository, after `source env.sh`
+(see [Set up your environment](../getting-started/setup.md)); the model and
+the dataset downloaded ([Download a model](models.md), [Get a
+dataset](datasets.md)).
+
 In a job, `env.sh` sets `HF_HUB_OFFLINE=1`: Transformers and Datasets read
 only local files and never try the network.
 
 ## Command
 
 `diagnostics/check_data.sh` is built from the [template](../getting-started/templates.md)
-`slurm/single_gpu.sh`. It loads `Qwen/Qwen2.5-0.5B` and `$DATA_DIR/wikitext`,
+`slurm/single_gpu.sh`. It loads `Qwen/Qwen2.5-0.5B` and `$WORKDIR/datasets/wikitext`,
 downloaded by `bash setup/download_assets.sh`.
 
 From the repository root, after `source env.sh`:
@@ -39,7 +44,7 @@ srun python diagnostics/check_data.py --model <repo_id> --dataset <dir> --config
 [OK] model Qwen/Qwen2.5-0.5B in cache: <WORKDIR>/hf/hub/models--Qwen--Qwen2.5-0.5B/snapshots/<hash> (<size> GiB, <n> files)
 [OK] model load (CPU): 494M parameters, <t> s
 [OK] model copy to GPU 0: <t> s
-[OK] dataset directory: <WORKDIR>/handbook/datasets/wikitext (<size> GiB, <n> files)
+[OK] dataset directory: <WORKDIR>/datasets/wikitext (<size> GiB, <n> files)
 [OK] dataset load: wikitext-2-raw-v1, <rows> rows, <t> s
        Arrow cache: <SCRATCHDIR>/hf/datasets/...
 [OK] tokenization: 1000 samples, <tokens> tokens, <t> s
@@ -55,7 +60,9 @@ All checks passed.
 | `LocalEntryNotFoundError` | model not downloaded, or downloaded with another `HF_HOME`: compare the path printed by `hf download` with the `HF_HOME=` line of the job |
 | `FileNotFoundError` on the dataset | wrong path, or dataset not copied yet |
 | `does not appear to have a file named …` | a file was left out by `--exclude` / `--include`: download again without it |
-| `load_dataset("<repo_id>")` fails | datasets of the handbook are loaded by path: `load_dataset("$DATA_DIR/<name>")` |
+| `load_dataset("<repo_id>")` fails | datasets of the handbook are loaded by path: `load_dataset(f"{os.environ['WORKDIR']}/datasets/<name>")` |
+| `[FAIL] HF_HUB_OFFLINE=1` | script run on a login node: run it with `sbatch` or `srun` |
+| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
 | the model asks for `trust_remote_code=True` | it runs Python code shipped with the model: read that code before allowing it |
 
 ## Reference result

@@ -3,6 +3,9 @@
 **Goal:** a Python environment of your own (other PyTorch or ROCm versions,
 extra packages, compiled extensions), used with the handbook job scripts.
 
+**Before you start:** a login shell in the handbook repository, for the job
+scripts (see [Set up your environment](../getting-started/setup.md)).
+
 | Environment | For |
 |---|---|
 | Prebuilt (Adastra) | stable versions maintained by CINES |
@@ -148,6 +151,7 @@ ROCm version the node's driver does not support.
 | Disk quota exceeded (inodes) | Too many files in `$WORKDIR`: `du -s --inodes $WORKDIR/*`, remove unused environments. |
 | `$SCRATCHDIR` full | Download cache: `uv cache clean`. |
 | Environment broken after a few weeks | It was in `$SCRATCHDIR` (purged): keep environments in `$WORKDIR`. |
+| `[env] Python environment (prebuilt)` instead of `(uv)` | `AI_ENV=uv` missing from `env.local.sh`, or `env.sh` sourced before the edit: open a new shell, `source env.sh`. |
 
 Ref: [AMD, Install PyTorch for ROCm](https://rocm.docs.amd.com/projects/ai-ecosystem/en/latest/frameworks/pytorch/install.html),
 [uv, The pip interface](https://docs.astral.sh/uv/pip/).

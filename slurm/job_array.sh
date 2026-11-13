@@ -1,21 +1,10 @@
 #!/bin/bash
-# =============================================================================
-# slurm/job_array.sh - Template: independent single-GPU runs (sweeps), one per
-# array task. Task i runs the script with the arguments on line i+1 of an
-# arguments file (one run per line, arguments without spaces).
-#
-# Copy it, adapt the lines marked EDIT, submit from the repository root with
-# one task per line of the arguments file (Adastra: at most 128 tasks; add %K
-# to run at most K at once):
-#   mkdir -p jobs && cp slurm/job_array.sh jobs/my_sweep.sh
-#   sbatch --array=0-$(( $(wc -l < jobs/args.txt) - 1 )) jobs/my_sweep.sh
-# Example jobs/args.txt (2 lines -> --array=0-1):
-#   --lr 1e-3 --seed 0
-#   --lr 1e-4 --seed 0
-# MI250X: --constraint=MI250 and --cpus-per-task=8.
-# Ref: Adastra doc, Job submission (job array):
-#      https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
-# =============================================================================
+# slurm/job_array.sh - Template: independent single-GPU runs; task i runs the
+# script with the arguments of line i+1 of jobs/args.txt (at most 128 tasks).
+# Usage: mkdir -p jobs && cp slurm/job_array.sh jobs/my_sweep.sh, adapt the EDIT lines,
+#        sbatch --array=0-$(( $(wc -l < jobs/args.txt) - 1 )) jobs/my_sweep.sh
+# MI250X: --constraint=MI250 --cpus-per-task=8
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
 #SBATCH --account=<project>           # leave as is: env.sh sets your project (SBATCH_ACCOUNT)
 #SBATCH --constraint=MI300            # EDIT: node type, MI300 (MI300A) or MI250 (MI250X)
 #SBATCH --array=0-3                   # default 4 tasks; set it on the sbatch command line

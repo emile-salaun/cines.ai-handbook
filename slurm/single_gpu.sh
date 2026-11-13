@@ -1,15 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# slurm/single_gpu.sh - Template: one Python process on one GPU (one APU on
-# MI300A, one GCD on MI250X), on a shared node.
-#
-# Copy it, adapt the lines marked EDIT, submit from the repository root:
-#   mkdir -p jobs && cp slurm/single_gpu.sh jobs/my_job.sh
-#   sbatch jobs/my_job.sh
-# MI250X: --constraint=MI250 and --cpus-per-task=8.
-# Ref: Adastra doc, Job submission (batch scripts, allocating a single GPU):
-#      https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
-# =============================================================================
+# slurm/single_gpu.sh - Template: one Python process on one GPU, shared node.
+# Usage: mkdir -p jobs && cp slurm/single_gpu.sh jobs/my_job.sh, adapt the EDIT lines,
+#        sbatch jobs/my_job.sh
+# MI250X: --constraint=MI250 --cpus-per-task=8
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
 #SBATCH --account=<project>           # leave as is: env.sh sets your project (SBATCH_ACCOUNT)
 #SBATCH --constraint=MI300            # EDIT: node type, MI300 (MI300A) or MI250 (MI250X)
 #SBATCH --nodes=1                     # one node

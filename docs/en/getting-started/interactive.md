@@ -3,6 +3,9 @@
 **Goal:** run commands on a compute node to debug a script, and look into a
 job that is already running.
 
+**Before you start:** a login shell in the repository, and the handbook
+example assets downloaded (see [Set up your environment](setup.md)).
+
 ## Interactive allocation (salloc)
 
 From the repository root, replace `<project>` with your project:
@@ -55,8 +58,9 @@ squeue --me -O JobID,NodeList,TimeLeft   # node and time left
 
 ## Run commands on the node
 
-In this shell, source the environment again (offline mode, MIOpen cache),
-then send commands to the compute node with `srun`:
+In this shell, `source env.sh`: it activates the Python environment, and the
+commands sent to the compute node with `srun` run offline (`HF_HUB_OFFLINE=1`).
+The shell itself stays online: downloads work there.
 
 ```bash
 source env.sh
@@ -81,6 +85,11 @@ Several GPUs:
 
 `exit` releases the allocation. It uses your project hours while it is open,
 even when idle.
+
+| Failure | Cause |
+|---|---|
+| `python: No such file or directory`, or `No module named 'torch'` | `env.sh` not sourced in the `salloc` shell: `source env.sh`, then the `srun` command again |
+| `offline load` fails in `check_env.py` | model not downloaded: `bash setup/download_assets.sh` in this shell or a login shell |
 
 ## Interact with a running job
 

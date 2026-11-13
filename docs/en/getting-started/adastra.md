@@ -2,6 +2,9 @@
 
 **Goal:** know which node type to request and where to put your files.
 
+**Before you start:** an Adastra account and a project with GPU hours
+(`myproject -l` lists your projects).
+
 ## Node types
 
 A node type is selected with `--constraint`. All handbook templates use
@@ -35,8 +38,8 @@ before the job starts. The handbook jobs run with `HF_HUB_OFFLINE=1`.
 | Variable | Use in the handbook | Purge |
 |---|---|---|
 | `$HOMEDIR` | small config files (`~/.bashrc`, Hugging Face token) | never |
-| `$WORKDIR` | the repository (`cines.ai-handbook/`, with its uv environment `.venv`), prebuilt AI environment, Hugging Face models (`$HF_HOME`), datasets (`$DATA_DIR`) | never |
-| `$SCRATCHDIR` | job outputs (`$OUTPUT_DIR`), dataset cache, checkpoints | files unused for 30 days |
+| `$WORKDIR` | the repository (`cines.ai-handbook/`, with its uv environment `.venv`), prebuilt AI environment, Hugging Face models (`$HF_HOME`), your datasets (`$WORKDIR/datasets/<name>`) | never |
+| `$SCRATCHDIR` | job outputs (`$SCRATCHDIR/handbook/<script>/` for the examples), dataset cache, checkpoints | files unused for 30 days |
 | `$SHAREDWORKDIR`, `$SHAREDSCRATCHDIR` | same, shared within the project | as above |
 
 Check your quotas with `myproject -s <project>`.

@@ -1,16 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# slurm/single_node.sh - Template: torchrun on all GPUs of one node, one
-# process per GPU (4 APUs on MI300A, 8 GCDs on MI250X); the node is reserved
-# for the job.
-#
-# Copy it, adapt the lines marked EDIT, submit from the repository root:
-#   mkdir -p jobs && cp slurm/single_node.sh jobs/my_job.sh
-#   sbatch jobs/my_job.sh
-# MI250X: --constraint=MI250 and --gpus-per-node=8.
-# Ref: Adastra doc, Job submission (batch scripts):
-#      https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
-# =============================================================================
+# slurm/single_node.sh - Template: torchrun on all GPUs of one node.
+# Usage: mkdir -p jobs && cp slurm/single_node.sh jobs/my_job.sh, adapt the EDIT lines,
+#        sbatch jobs/my_job.sh
+# MI250X: --constraint=MI250 --gpus-per-node=8
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html
 #SBATCH --account=<project>           # leave as is: env.sh sets your project (SBATCH_ACCOUNT)
 #SBATCH --constraint=MI300            # EDIT: node type, MI300 (MI300A) or MI250 (MI250X)
 #SBATCH --nodes=1                     # one node

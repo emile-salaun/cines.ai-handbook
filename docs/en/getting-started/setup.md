@@ -91,8 +91,8 @@ Then choose your Python environment:
         - **Compute nodes:** no internet. Run `uv sync` on a login node only;
           in jobs, `env.sh` sets `UV_OFFLINE=1`.
         - **ROCm libraries:** the PyTorch wheel ships its own. If `env.sh` warns
-          that `LD_LIBRARY_PATH` contains ROCm, run `module purge` before
-          `source env.sh`.
+          that `LD_LIBRARY_PATH` contains system ROCm libraries, run
+          `module purge` before `source env.sh`.
         - **`PYTHONPATH`:** if `env.sh` warns that it is set, packages outside
           the environment may be imported first: `unset PYTHONPATH`.
         - **Disk space:** environment in the repository, in `$WORKDIR` (several
@@ -123,8 +123,6 @@ source env.sh
     [env] ACCOUNT=<project>
     [env] Python environment (prebuilt): <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
     [env] HF_HOME=<WORKDIR>/hf
-    [env] DATA_DIR=<WORKDIR>/handbook/datasets
-    [env] OUTPUT_DIR=<SCRATCHDIR>/handbook
     ```
 
     `ERROR: no AI environment`: read the module messages above it.
@@ -135,8 +133,6 @@ source env.sh
     [env] ACCOUNT=<project>
     [env] Python environment (uv): <WORKDIR>/cines.ai-handbook/.venv
     [env] HF_HOME=<WORKDIR>/hf
-    [env] DATA_DIR=<WORKDIR>/handbook/datasets
-    [env] OUTPUT_DIR=<SCRATCHDIR>/handbook
     ```
 
     `ERROR: no uv environment`: run `module load python && uv sync --locked`
@@ -152,6 +148,34 @@ Then `which python` points into your environment.
     environment, set it in `env.local.sh` instead. Avoid `$SCRATCHDIR`: unused
     files are purged after 30 days.
 
+## What `env.sh` sets
+
+| Variable | Default | Where | Change it | Without `env.sh` |
+|---|---|---|---|---|
+| `ACCOUNT`, exported as `SBATCH_ACCOUNT`, `SALLOC_ACCOUNT`, `SLURM_ACCOUNT` | none: warning | everywhere | `env.local.sh` | `export SBATCH_ACCOUNT=<project> SALLOC_ACCOUNT=<project> SLURM_ACCOUNT=<project>`, or `--account=<project>` |
+| `AI_ENV` | `prebuilt` | everywhere | `env.local.sh` (`uv`) | activate the environment yourself (next rows) |
+| `AI_MODULE` | `venv/0.8.0+torch2.11.0+rocm7.2.0` | everywhere | `env.local.sh` | first time: `module purge; module load develop AI-develop <AI_MODULE>` |
+| `AI_VENV_PATH` | `$WORKDIR/envs/<module>` | everywhere | `env.local.sh` | `source <AI_VENV_PATH>/bin/activate.poverlay` |
+| `AI_UV_VENV_PATH` | `<repository>/.venv` | everywhere | `env.local.sh` | `source <AI_UV_VENV_PATH>/bin/activate` |
+| `UV_CACHE_DIR` | `$SCRATCHDIR/uv-cache` | everywhere | command line | `export UV_CACHE_DIR=$SCRATCHDIR/uv-cache` |
+| `UV_LINK_MODE` | `copy` | everywhere | — | `export UV_LINK_MODE=copy` |
+| `HF_HOME` | `$WORKDIR/hf` | everywhere | `env.local.sh` (shared cache: `$SHAREDWORKDIR/hf`), command line | `export HF_HOME=$WORKDIR/hf` |
+| `HF_DATASETS_CACHE` | `$SCRATCHDIR/hf/datasets` | everywhere | command line | `export HF_DATASETS_CACHE=$SCRATCHDIR/hf/datasets` |
+| `HF_TOKEN_PATH` | `~/.cache/huggingface/token` | everywhere | — (keep it in `$HOME`) | `export HF_TOKEN_PATH=$HOME/.cache/huggingface/token` |
+| `SLURM_EXPORT_ENV` | `ALL,HF_HUB_OFFLINE=1,UV_OFFLINE=1` | `salloc` shell | — | `srun --export=ALL,HF_HUB_OFFLINE=1,UV_OFFLINE=1 <command>` |
+| `HF_HUB_OFFLINE`, `UV_OFFLINE` | `1` | compute nodes | — | in the job script: `export HF_HUB_OFFLINE=1 UV_OFFLINE=1` |
+| `MIOPEN_USER_DB_PATH`, `MIOPEN_CUSTOM_CACHE_DIR` | `/tmp/$USER-miopen-<jobid>-<random>` | compute nodes | — | in the job script: `export MIOPEN_USER_DB_PATH=$(mktemp -d /tmp/$USER-miopen-XXXXXX) MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_USER_DB_PATH`, `rm -rf` it at the end |
+| `run <command>` (function) | — | job scripts | — | run the command itself |
+| `env_summary` (function) | — | everywhere | — | `echo $SBATCH_ACCOUNT $VIRTUAL_ENV $HF_HOME` |
+
+- **Where:** *everywhere* is the login node, the `salloc` shell and the
+  compute nodes. *Compute nodes* are batch scripts and commands started with
+  `srun` (Slurm sets `SLURMD_NODENAME` there). The `salloc` shell stays on
+  the login node: online, but its `srun` commands run offline.
+- **`env.local.sh`** holds your own settings, kept for every shell and job:
+  `ACCOUNT`, `AI_ENV`, a shared `HF_HOME`. No data or output paths.
+- **Command line:** one session only, see below.
+
 ## Override with command-line variables
 
 Variables given before `source env.sh` win over `env.local.sh`, which wins
@@ -163,8 +187,8 @@ HF_HOME=$SHAREDWORKDIR/hf source env.sh     # model cache shared in the project
 ```
 
 Settings: `ACCOUNT`, `AI_ENV`, `AI_MODULE`, `AI_VENV_PATH`, `AI_UV_VENV_PATH`,
-`UV_CACHE_DIR`, `HF_HOME`, `HF_DATASETS_CACHE`, `HF_TOKEN_PATH`, `DATA_DIR`,
-`OUTPUT_DIR`.
+`UV_CACHE_DIR`, `HF_HOME`, `HF_DATASETS_CACHE`, `HF_TOKEN_PATH` (see
+[What `env.sh` sets](#what-envsh-sets)).
 A variable already set in your shell counts as a command-line value: check the
 `[env]` lines. After editing `env.local.sh`, open a new shell.
 

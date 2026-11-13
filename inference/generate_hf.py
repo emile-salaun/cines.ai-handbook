@@ -1,21 +1,10 @@
 #!/usr/bin/env python3
-"""Batch text generation with Transformers on one GPU (single process).
+"""Batch text generation with Transformers on one GPU: throughput and answers (JSON Lines).
 
-Loads an instruct model offline from HF_HOME, generates answers to a set of
-prompts in batches (greedy decoding), and prints the load time, the generation
-time and the throughput in generated tokens per second. The answers are
-written to a JSON Lines file. Download the model first on a login node with
-setup/download_assets.sh.
-
-MI300A and MI250X: same script; one APU or one GCD. On MI250X, a GCD has
-64 GB of memory: models above ~30B parameters (bf16) do not fit.
-
-Usage (from the repository root):
-    sbatch inference/generate_hf.sh              # batch job, handbook defaults
-    srun python inference/generate_hf.py [--model <repo_id>] [--prompts <n>]
-        [--batch-size <n>] [--max-new-tokens <n>] [--output <file>]
-Ref: Transformers, Generation:
-    https://huggingface.co/docs/transformers/main_classes/text_generation
+Usage: sbatch inference/generate_hf.sh, or in an allocation:
+    srun python inference/generate_hf.py [--model <repo_id>] [--batch-size <n>] [--output-dir <dir>]
+Same on MI300A and MI250X; a MI250X GCD has 64 GB: models above ~30B (bf16) do not fit.
+Ref: https://huggingface.co/docs/transformers/main_classes/text_generation
 """
 
 import argparse
@@ -52,15 +41,18 @@ def parse_args():
     add("--prompts", type=int, default=64, help="number of prompts (%(default)s)")
     add("--batch-size", type=int, default=16, help="prompts per batch (%(default)s)")
     add("--max-new-tokens", type=int, default=128, help="(%(default)s)")
-    add("--output", help="JSON Lines file (default: $OUTPUT_DIR/generate_hf/<job id>.jsonl)")
+    add("--output-dir", help="answers directory (default: $SCRATCHDIR/handbook/generate_hf)")
     return parser.parse_args()
 
 
-def output_path(path):
-    if path:
-        return path
-    job = os.environ.get("SLURM_JOB_ID", "local")
-    return os.path.join(os.environ.get("OUTPUT_DIR", "."), "generate_hf", f"{job}.jsonl")
+def output_path(output_dir):
+    """<output dir>/<job id>.jsonl; None without --output-dir and SCRATCHDIR."""
+    if not output_dir:
+        scratch = os.environ.get("SCRATCHDIR")
+        if not scratch:
+            return None
+        output_dir = os.path.join(scratch, "handbook", "generate_hf")
+    return os.path.join(output_dir, f"{os.environ.get('SLURM_JOB_ID', 'local')}.jsonl")
 
 
 def build_inputs(tokenizer, prompts):
@@ -86,6 +78,10 @@ def generated_lengths(new_tokens, eos_ids):
 
 def main():
     args = parse_args()
+    path = output_path(args.output_dir)
+    if path is None:
+        print("[FAIL] SCRATCHDIR is not set (not on Adastra?): give --output-dir <dir>")
+        return 1
     if not torch.cuda.is_available():
         print("[WARN] no GPU visible: running on CPU")
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -137,8 +133,7 @@ def main():
         torch.cuda.synchronize()
     elapsed = time.perf_counter() - start
 
-    path = output_path(args.output)
-    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         for prompt, answer in zip(prompts, answers):
             f.write(json.dumps({"prompt": prompt, "answer": answer}) + "\n")

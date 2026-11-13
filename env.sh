@@ -1,41 +1,11 @@
 # shellcheck shell=bash
-# =============================================================================
-# env.sh - Handbook environment: Slurm project, Python environment (prebuilt
-# or uv), Hugging Face cache, job variables and log helpers.
-#
-# Source it from the repository root, on a login node and in every job
-# (the Slurm templates do it for you):
-#   source env.sh
-#
-# Settings ("User settings" block), from highest to lowest priority:
-#   1. variables given on the command line:
-#        ACCOUNT=<other_project> source env.sh
-#   2. env.local.sh at the repository root (ignored by git), set once:
-#        echo 'ACCOUNT=<project>' > env.local.sh
-#   3. the defaults below.
-# A variable already set in your shell counts as a command-line value: the
-# [env] summary shows the values in use. After editing env.local.sh, open a
-# new shell.
-#
-# Python environment (AI_ENV):
-#   prebuilt  Adastra's prebuilt AI environment (default), created on first use.
-#   uv        the handbook's uv environment (pyproject.toml + uv.lock), .venv
-#             in the repository, created on a login node with:
-#               module load python && uv sync --locked [--group <group>]
-#   none      variables only, no environment activated (used by the setup scripts).
-#
-# Functions for the job templates:
-#   run <command>   runs it between [job] start / end lines (elapsed time, exit code)
-#   env_summary     prints the [env] lines
-#
-# MI300A / MI250X: nothing differs here; the node type is chosen per job
-# (--constraint).
-#
-# Ref: Adastra doc, Data storage and transfers (storage areas):
-#      https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html
-#      Software stack, libraries (MIOpen cache, Hugging Face offline mode):
-#      https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
-# =============================================================================
+# env.sh - The Adastra AI environment in one line: Slurm project, Python
+# environment (prebuilt or uv), Hugging Face cache; on compute nodes, offline
+# mode and a per-job MIOpen cache. Same on MI300A and MI250X.
+# Usage: source env.sh   (repository root, on a login node and in every job)
+# Settings: command line > env.local.sh > defaults. Every variable and its plain
+# `export`: handbook page "Set up your environment", table "What env.sh sets".
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     echo "[env] ERROR: source this file, do not execute it: source env.sh" >&2
@@ -51,7 +21,7 @@ _root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # --- User settings ------------------------------------------------------------
 _settings=(ACCOUNT AI_ENV AI_MODULE AI_VENV_PATH AI_UV_VENV_PATH UV_CACHE_DIR
-    HF_HOME HF_DATASETS_CACHE HF_TOKEN_PATH DATA_DIR OUTPUT_DIR)
+    HF_HOME HF_DATASETS_CACHE HF_TOKEN_PATH)
 
 # 1 > 2: keep the values set before sourcing, apply env.local.sh, restore them.
 _cli=()
@@ -80,8 +50,6 @@ UV_CACHE_DIR="${UV_CACHE_DIR:-${SCRATCHDIR}/uv-cache}"  # regenerable
 HF_HOME="${HF_HOME:-${WORKDIR}/hf}"                      # models (not purged)
 HF_DATASETS_CACHE="${HF_DATASETS_CACHE:-${SCRATCHDIR}/hf/datasets}"  # regenerable
 HF_TOKEN_PATH="${HF_TOKEN_PATH:-${HOME}/.cache/huggingface/token}"   # private, even if HF_HOME is shared
-DATA_DIR="${DATA_DIR:-${WORKDIR}/handbook/datasets}"     # datasets, loaded by path
-OUTPUT_DIR="${OUTPUT_DIR:-${SCRATCHDIR}/handbook}"       # job outputs
 # declare -gx, not export: with `VAR=value source env.sh`, bash would restore
 # VAR to its previous value when env.sh returns.
 for _v in "${_settings[@]}"; do declare -gx "${_v}=${!_v}"; done
@@ -94,7 +62,7 @@ export UV_LINK_MODE=copy
 # These variables override the "#SBATCH --account=<project>" line of the templates.
 if [[ -n "${ACCOUNT}" ]]; then
     export SBATCH_ACCOUNT="${ACCOUNT}" SLURM_ACCOUNT="${ACCOUNT}" SALLOC_ACCOUNT="${ACCOUNT}"
-elif [[ -z "${SLURM_JOB_ID:-}" ]]; then
+elif [[ -z "${SLURMD_NODENAME:-}" ]]; then
     echo "[env] WARNING: ACCOUNT is empty: jobs will be rejected." >&2
     echo "[env]   List your projects with: myproject -l" >&2
     echo "[env]   Then set yours once: echo 'ACCOUNT=<project>' > ${_root}/env.local.sh" >&2
@@ -157,17 +125,23 @@ esac
 if ((_nounset)); then set -u; fi
 unset _nounset
 
-# --- Job settings (compute nodes) ---------------------------------------------
-if [[ -n "${SLURM_JOB_ID:-}" ]]; then
+# --- Compute-node settings -------------------------------------------------------
+# slurmd sets SLURMD_NODENAME in batch scripts and srun steps, on the compute
+# node. salloc does not: its shell stays on the login node, with internet.
+if [[ -n "${SLURMD_NODENAME:-}" ]]; then
     # Compute nodes have no internet access: models must be in HF_HOME already.
     export HF_HUB_OFFLINE=1 UV_OFFLINE=1
     # MIOpen cache in node-local /tmp, one per job (Adastra doc, MIOpen section).
     # Random name: on shared nodes, another user cannot create it in advance.
     # run creates it (mode 700) and removes it at the end of the job.
     _rand="$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
-    export MIOPEN_USER_DB_PATH="/tmp/${USER}-miopen-${SLURM_JOB_ID}-${_rand}"
+    export MIOPEN_USER_DB_PATH="/tmp/${USER}-miopen-${SLURM_JOB_ID:-step}-${_rand}"
     export MIOPEN_CUSTOM_CACHE_DIR="${MIOPEN_USER_DB_PATH}"
     unset _rand
+elif [[ -n "${SLURM_JOB_ID:-}" ]]; then
+    # salloc shell: it stays online (downloads work), the commands it starts
+    # with srun run offline on the compute node (SLURM_EXPORT_ENV = srun --export).
+    export SLURM_EXPORT_ENV="ALL,HF_HUB_OFFLINE=1,UV_OFFLINE=1"
 fi
 
 # --- Log helpers -----------------------------------------------------------------
@@ -175,10 +149,10 @@ env_summary() {
     echo "[env] ACCOUNT=${ACCOUNT:-<unset>}"
     echo "[env] Python environment (${AI_ENV}): ${VIRTUAL_ENV:-<none>}"
     echo "[env] HF_HOME=${HF_HOME}"
-    echo "[env] DATA_DIR=${DATA_DIR}"
-    echo "[env] OUTPUT_DIR=${OUTPUT_DIR}"
-    if [[ -n "${SLURM_JOB_ID:-}" ]]; then
+    if [[ -n "${SLURMD_NODENAME:-}" ]]; then
         echo "[env] HF_HUB_OFFLINE=${HF_HUB_OFFLINE}  MIOPEN_USER_DB_PATH=${MIOPEN_USER_DB_PATH}"
+    elif [[ -n "${SLURM_JOB_ID:-}" ]]; then
+        echo "[env] srun steps: SLURM_EXPORT_ENV=${SLURM_EXPORT_ENV}"
     fi
 }
 
@@ -208,7 +182,7 @@ run() {
 }
 
 # Summary when sourced by hand (batch jobs print it through run).
-if [[ -z "${SLURM_JOB_ID:-}" || -t 1 ]]; then
+if [[ -z "${SLURMD_NODENAME:-}" || -t 1 ]]; then
     env_summary
 fi
 unset _root

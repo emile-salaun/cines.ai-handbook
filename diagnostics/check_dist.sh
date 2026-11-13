@@ -1,17 +1,9 @@
 #!/bin/bash
-# =============================================================================
-# diagnostics/check_dist.sh - Ready-to-run job: one process per GPU of a node
-# (torchrun), placement report and RCCL all_reduce (diagnostics/check_dist.py).
-# Built from slurm/single_node.sh.
-#
-# Usage (from the repository root, after `source env.sh`):
-#   sbatch diagnostics/check_dist.sh
-# MI250X:
-#   sbatch --constraint=MI250 --gpus-per-node=8 diagnostics/check_dist.sh
-# Log: logs/check_dist_<job id>.out
-# Ref: Adastra doc, Software stack, libraries (Torch elastic, RCCL):
-#      https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
-# =============================================================================
+# diagnostics/check_dist.sh - Ready-to-run job: process placement and RCCL all_reduce,
+# all GPUs of a node.
+# Usage: sbatch diagnostics/check_dist.sh
+#        sbatch --constraint=MI250 --gpus-per-node=8 diagnostics/check_dist.sh   # MI250X
+# Ref: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 #SBATCH --account=<project>
 #SBATCH --constraint=MI300
 #SBATCH --nodes=1

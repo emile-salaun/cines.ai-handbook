@@ -1,19 +1,10 @@
 #!/usr/bin/env python3
-"""Environment and GPU check for the prebuilt AI environment (single process).
+"""Environment and GPU check: PyTorch/ROCm, RCCL plugin, a matmul per GPU.
 
-Prints the environment (Python, PyTorch/ROCm, modules, key variables), checks
-the RCCL network plugin, lists the visible GPUs and runs a matmul on each one.
-With --model, also loads a model offline from HF_HOME (download it first on a
-login node with setup/download_assets.sh). Exits with status 1 if a check fails.
-
-MI300A: GPUs are reported as gfx942 (one APU per GPU, 4 per node).
-MI250X: GPUs are reported as gfx90a (one GCD per GPU, 8 per node).
-
-Usage (from the repository root):
-    sbatch diagnostics/check_env.sh             # batch job, with --model Qwen/Qwen2.5-0.5B
-    srun python diagnostics/check_env.py [--model <repo_id>]   # in an interactive allocation
-Ref: Adastra doc, Software stack, libraries (PyTorch, aws-ofi-rccl, MIOpen):
-    https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
+Usage: sbatch diagnostics/check_env.sh, or in an allocation:
+    srun python diagnostics/check_env.py [--model <repo_id>]   # --model: offline load
+GPUs: gfx942 on MI300A, gfx90a on MI250X. Exit code 1 if a check fails.
+Ref: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html
 """
 
 import argparse
