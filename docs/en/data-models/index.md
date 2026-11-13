@@ -17,14 +17,18 @@ environment, and the base of the uv environment (no group).
 
 ## Where data lives
 
-| What | Path | Default | Purge |
-|---|---|---|---|
-| Hugging Face models | `$HF_HOME` | `$WORKDIR/hf` | never |
-| Your datasets | `$WORKDIR/datasets/<name>` | — | never |
-| Public datasets provided by CINES (read-only) | `$DSDIR` | set by Adastra | — |
-| Dataset cache (Arrow files, regenerated when missing) | `$HF_DATASETS_CACHE` | `$SCRATCHDIR/hf/datasets` | 30 days unused |
-| Outputs of the handbook examples | `$SCRATCHDIR/handbook/<script>/` | — | 30 days unused |
-| Your Hugging Face token | `$HF_TOKEN_PATH` | `~/.cache/huggingface/token` | never |
+| What | Where | Purge |
+|---|---|---|
+| Hugging Face models | `$HF_HOME` (`$WORKDIR/hf`) | never |
+| Your own models (checkpoints from elsewhere) | `$WORKDIR/models/<name>` | never |
+| Your datasets | `$WORKDIR/datasets/<name>` | never |
+| Public datasets provided by CINES (read-only) | `$DSDIR` | — |
+| Dataset cache (Arrow files, rebuilt when missing) | `$HF_DATASETS_CACHE` (`$SCRATCHDIR/hf/datasets`) | 30 days unused |
+| Job outputs, checkpoints | `$SCRATCHDIR/…` (handbook examples: `$SCRATCHDIR/handbook/<script>/`) | 30 days unused |
+| Your Hugging Face token | `$HF_TOKEN_PATH` (`~/.cache/huggingface/token`) | never |
+
+`$SCRATCHDIR` is purged: copy the outputs and checkpoints you keep to
+`$WORKDIR`.
 
 Adastra sets `$WORKDIR`, `$SCRATCHDIR` and `$DSDIR`. `env.sh` sets the
 Hugging Face variables: see
@@ -44,6 +48,7 @@ files. Download on a login node; the shell of an
    gated models included.
 2. [Get a dataset](datasets.md): from `$DSDIR`, from the Hub, or from your
    own computer.
-3. [Use them in a job](offline.md): offline load, sizes and load times.
+3. [Load a model and a dataset in a job](offline.md): offline load, and the
+   lines to put in your own job.
 
 </div>

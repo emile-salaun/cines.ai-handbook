@@ -28,7 +28,7 @@ nav = [
     "data-models/index.md",
     { "Download a model" = "data-models/models.md" },
     { "Get a dataset" = "data-models/datasets.md" },
-    { "Use them in a job" = "data-models/offline.md" },
+    { "Load a model and a dataset in a job" = "data-models/offline.md" },
   ] },
   { "3 · Inference" = [
     "inference/index.md",

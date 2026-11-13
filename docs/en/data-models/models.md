@@ -8,40 +8,39 @@ that jobs can load it offline.
 
 ## Command
 
-On a login node, from the repository root, after `source env.sh` (it sets
-`HF_HOME` and activates the environment that provides `hf`):
+On a login node:
 
 ```bash
 hf download Qwen/Qwen2.5-1.5B
 ```
 
-Useful options:
+Interrupted: run the same command again, it resumes.
+
+Skip the files Transformers does not need (one `--exclude` per pattern):
 
 ```bash
-hf download Qwen/Qwen2.5-1.5B --exclude "*.bin"       # skip PyTorch pickle weights
-hf download Qwen/Qwen2.5-1.5B --revision <commit>     # a fixed version
+hf download Qwen/Qwen2.5-1.5B --exclude "*.bin" --exclude "*.pth" --exclude "original/*"
 ```
 
-The handbook loads weights with `use_safetensors=True`: `*.bin` files are not
-needed when the model also has `*.safetensors` files.
+The handbook loads weights with `use_safetensors=True`: PyTorch pickle
+weights (`*.bin`, `*.pth`) are not needed when the model also has
+`*.safetensors` files, and some models (Llama) ship a second copy of the
+weights in `original/`.
+
+A fixed version of the model: `--revision <commit>`.
 
 ## What to look at
 
-The last line printed by `hf download` is the model path. It must start with
-your `$HF_HOME` (`<WORKDIR>/hf/hub/models--Qwen--Qwen2.5-1.5B/snapshots/<hash>`).
+`hf download` prints the model path
+(`path: <WORKDIR>/hf/hub/models--Qwen--Qwen2.5-1.5B/snapshots/<hash>`). It
+must start with your `$HF_HOME`.
 
 ```bash
 hf cache ls                       # models in the cache, with their size
 du -sh $HF_HOME/hub/models--*     # size of each model
 ```
 
-`hf cache ls` is `hf cache scan` with older versions of `huggingface_hub`.
-
-In your code, load the model by its id: it is read from `$HF_HOME`.
-
-```python
-model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-1.5B", use_safetensors=True)
-```
+To load it in a job: [Load a model and a dataset in a job](offline.md#in-your-own-job).
 
 | Failure | Cause |
 |---|---|
@@ -60,6 +59,8 @@ Some models (Llama, Gemma, …) need an access request and a token:
 3. On the login node, with the environment active: `hf auth login`, then
    paste the token.
 
+Jobs do not need the token: they read the files already in your cache.
+
 !!! cines "Hugging Face token"
     `hf auth login` stores your token in `HF_TOKEN_PATH`
     (`~/.cache/huggingface/token`), not in `HF_HOME`: a model cache shared in
@@ -71,23 +72,25 @@ Some models (Llama, Gemma, …) need an access request and a token:
 A model that is not on the Hub (your own checkpoint, for example): copy its
 directory to `$WORKDIR/models/<name>` (see
 [from your computer](datasets.md#from-your-computer)) and load it by path:
-`from_pretrained(f"{os.environ['WORKDIR']}/models/<name>")`.
+`from_pretrained(f"{os.environ['WORKDIR']}/models/<name>")`. Check it with
+`check_data.py --model $WORKDIR/models/<name>` (see
+[Load a model and a dataset in a job](offline.md#command)).
 
 ## Disk space
 
-`$WORKDIR` has a quota per project (15 TiB, 250,000 files): check it with
-`myproject -s <project>`. Remove a model you no longer use:
+`$WORKDIR` has a quota per project, in size and in number of files: check it
+with `myproject -s <project>` (see [Adastra at a glance](../getting-started/adastra.md#storage)).
+Remove a model you no longer use:
 
 ```bash
 hf cache rm model/Qwen/Qwen2.5-1.5B
 ```
 
+A download you stopped and will not resume leaves partial files that
+`hf cache ls` does not count: `hf cache prune` removes them.
+
 To share one cache within the project, see
 [Change a setting](../getting-started/setup.md#change-a-setting)
 (`HF_HOME=$SHAREDWORKDIR/hf`).
 
-## The handbook examples
-
-`bash setup/download_assets.sh` downloads the models and the dataset of the
-handbook examples (see [Set up your environment](../getting-started/setup.md)).
-It prints each `hf download` command before running it.
+Ref: [Adastra doc, Software stack, libraries](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/libraries/index.html).
