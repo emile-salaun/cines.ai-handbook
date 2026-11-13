@@ -25,7 +25,7 @@ git clone https://github.com/emile-salaun/cines.ai-handbook.git
 cd cines.ai-handbook
 echo 'ACCOUNT=<project>' > env.local.sh            # your Slurm project, once
 source env.sh                                      # every session
-bash setup/download_assets.sh                      # test model into your cache
+bash setup/download_assets.sh                      # models and dataset of the examples
 sbatch diagnostics/check_env.sh                    # first GPU job
 ```
 
@@ -47,10 +47,10 @@ echo 'AI_ENV=uv' >> env.local.sh    # then open a new shell
 
 ```
 cines.ai-handbook/
-├── env.sh             # Slurm project, Python environment, HF cache, job variables
+├── env.sh             # Slurm project, Python environment, HF cache; offline mode in jobs
 ├── env.local.sh       # your settings (not in git): ACCOUNT=<project>
-├── pyproject.toml     # handbook uv environment: base + dependency groups (uv.lock, .python-version)
-├── setup/             # login node: models and datasets
+├── pyproject.toml     # handbook uv environment: base + dependency groups (uv.lock)
+├── setup/             # login node: download the models and dataset of the examples
 ├── slurm/             # job script templates to copy (EDIT lines)
 ├── diagnostics/       # environment, GPU, RCCL and offline data checks, with their ready-to-run .sh
 ├── jobs/              # your own job scripts (not in git)
@@ -67,9 +67,9 @@ Folders are by topic; the reading order is that of the chapters of the
 
 | # | Chapter | Status |
 |---|---|---|
-| 1 | Getting started | written, to be tested on Adastra |
-| 2 | Data & models | written, to be tested on Adastra |
-| 3 | Inference | planned |
+| 1 | Getting started | written; tested on MI300A and MI250X (prebuilt environment), uv environment to test |
+| 2 | Data & models | written; tested on MI300A and MI250X (prebuilt environment) |
+| 3 | Inference | in progress: batch generation with Transformers written |
 | 4 | Training & fine-tuning | planned |
 | 5 | Profiling | planned |
 | A | Appendices | "Build your own environment (uv)" written; others planned |
