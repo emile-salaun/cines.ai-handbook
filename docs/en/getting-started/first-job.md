@@ -34,9 +34,11 @@ cat logs/check_env_<jobid>.out
 
 ## What to look at
 
-The log starts with the `[env]` lines of `env.sh`:
+The log starts with a line of the AI module, then the `[env]` lines of
+`env.sh`:
 
 ```text
+Info: See Adastra AI module documentation at: https://dci.dci-gitlab.cines.fr/webextranet/software_stack/AI/index.html (or type module load venv)
 [env] ACCOUNT=<project>
 [env] Python environment (prebuilt): <WORKDIR>/envs/venv-0.8.0-torch2.11.0-rocm7.2.0
 [env] HF_HOME=<WORKDIR>/hf
@@ -49,6 +51,8 @@ Then the output of `check_env.py`:
 - `GPU 0 matmul`: the architecture is `gfx942` on MI300A, `gfx90a` on MI250X.
 - `offline load of Qwen/Qwen2.5-0.5B`: the model is read from your cache,
   without internet.
+- `[WARN] aws-ofi-rccl plugin not found`: no effect on one node; it only
+  matters for jobs on several nodes.
 
 Once the job has ended, Slurm gives its state, exit code and run time:
 
@@ -64,7 +68,7 @@ JobID           JobName      State ExitCode    Elapsed
 
 | Failure | Cause |
 |---|---|
-| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
+| `sbatch: error: Problem with your account on project <project>_mi300` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](setup.md) |
 | `offline load` fails | model not downloaded: `bash setup/download_assets.sh` on a login node |
 | no log file | submitted outside the repository root (`logs/` not found) |
 | `State` is `FAILED`, `ExitCode` is not `0:0` | read the `[FAIL]` lines and the error at the end of the log |
@@ -76,5 +80,5 @@ The `Elapsed` value of `sacct`.
 
 | Partition | Elapsed | Status |
 |---|---|---|
-| MI300A | — | to be measured |
-| MI250X | — | to be measured |
+| MI300A | 00:00:50 | measured 2026-11-13 |
+| MI250X | 00:00:54 | measured 2026-11-13 |

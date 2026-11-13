@@ -1,9 +1,10 @@
 # Getting started
 
-Discovering the Adastra GPU environment. This chapter covers what you need
-for AI jobs; for everything else, see the [official Adastra documentation](https://dci.dci-gitlab.cines.fr/webextranet/).
+This chapter takes you from your first login to a GPU job. It covers what
+you need for AI jobs; for everything else, see the
+[official Adastra documentation](https://dci.dci-gitlab.cines.fr/webextranet/).
 
-## What you need
+## Requirements
 
 - An Adastra login and a project with GPU hours (`myproject -l` lists your
   projects).
@@ -15,14 +16,14 @@ for AI jobs; for everything else, see the [official Adastra documentation](https
 
 1. [Adastra at a glance](adastra.md): node types, storage areas, what runs where.
 2. [Set up your environment](setup.md): clone the repository, set your Slurm
-   project once, choose the prebuilt AI environment or your own (uv),
-   download a test model.
+   project once, choose the prebuilt AI environment or the handbook's uv
+   environment, download a test model.
 3. [First job](first-job.md): one GPU, environment check.
 4. [Write your job script](templates.md): copy a template and adapt it.
 5. [Interactive session](interactive.md): work on a compute node, look into a
    running job.
 6. [GPU and communication checks](checks.md): GPUs seen by each process and
-   RCCL, on one GPU and one node.
+   RCCL, on one node.
 
 </div>
 

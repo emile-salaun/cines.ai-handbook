@@ -20,4 +20,4 @@ set -euo pipefail
 source env.sh
 
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK}"
-python diagnostics/check_env.py --model Qwen/Qwen2.5-0.5B
+python diagnostics/check_env.py --model 'Qwen/Qwen2.5-0.5B'

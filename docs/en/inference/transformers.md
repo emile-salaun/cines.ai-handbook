@@ -60,7 +60,7 @@ answers: <SCRATCHDIR>/handbook/generate_hf/<jobid>.jsonl
 | `LocalEntryNotFoundError` | model not downloaded: `hf download <repo_id>` on a login node (see [Download a model](../data-models/models.md)) |
 | `out of memory` | batch or model too large for the GPU: lower `--batch-size`; on MI250X, a GCD has 64 GB |
 | `device=cpu` and `[WARN] no GPU visible` | run with `srun` inside an allocation, or in a job |
-| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
+| `sbatch: error: Problem with your account on project <project>_mi300` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
 
 ## Reference result
 

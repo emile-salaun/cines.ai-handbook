@@ -32,15 +32,19 @@ Submit from the repository root: the script sources `env.sh` and writes to
 | `--constraint` | node type | `MI300` | `MI250` |
 | `--cpus-per-task` (`single_gpu`) | CPU cores of one GPU | `24` | `8` |
 | `--gpus-per-node` (`single_node`) | all GPUs of the node | `4` | `8` |
-| `--time` | maximum run time, `HH:MM:SS`; the job is stopped after it | | |
-| `--job-name` | job name, also the log name `logs/<name>_<job id>.out` | | |
-| last line (`python ...`, `torchrun ...`) | your script and its arguments | | |
+
+Then, on both node types:
+
+- `--time`: maximum run time, `HH:MM:SS`, at most `24:00:00`; the job is
+  stopped after it. A shorter time starts sooner.
+- `--job-name`: job name, also the log name `logs/<name>_<job id>.out`.
+- the last line (`python ...`, `torchrun ...`): your script and its arguments.
 
 The other lines stay as they are:
 
 - `#SBATCH --account=<project>`: `env.sh` replaces it with your project
   (`SBATCH_ACCOUNT`). Without `source env.sh`, the submission fails with
-  `Invalid account`.
+  `Problem with your account on project <project>_mi300`.
 - `--gpus-per-node=1` (`single_gpu`): on shared nodes, a job must ask for at
   least one GPU.
 - `source env.sh`: project, Python environment, offline mode, MIOpen cache.
@@ -69,7 +73,7 @@ one-off change: `sbatch --time=01:00:00 jobs/my_job.sh`.
 
 | Failure | Cause |
 |---|---|
-| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: `source env.sh`, check the `[env] ACCOUNT=` line |
+| `sbatch: error: Problem with your account on project <project>_mi300` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: `source env.sh`, check the `[env] ACCOUNT=` line |
 | no log file | submitted outside the repository root (`logs/` not found) |
 
 Ref: [Adastra doc, Job submission](https://dci.dci-gitlab.cines.fr/webextranet/user_support/index.html).

@@ -62,7 +62,7 @@ All checks passed.
 | `does not appear to have a file named …` | a file was left out by `--exclude` / `--include`: download again without it |
 | `load_dataset("<repo_id>")` fails | datasets of the handbook are loaded by path: `load_dataset(f"{os.environ['WORKDIR']}/datasets/<name>")` |
 | `[FAIL] HF_HUB_OFFLINE=1` | script run on a login node: run it with `sbatch` or `srun` |
-| `sbatch: error: Batch job submission failed: Invalid account or account/partition combination specified` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
+| `sbatch: error: Problem with your account on project <project>_mi300` | `env.sh` not sourced in this shell, or `ACCOUNT` not set: see [Set up your environment](../getting-started/setup.md) |
 | the model asks for `trust_remote_code=True` | it runs Python code shipped with the model: read that code before allowing it |
 
 ## Reference result

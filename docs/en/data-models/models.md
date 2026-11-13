@@ -60,8 +60,11 @@ Some models (Llama, Gemma, …) need an access request and a token:
 3. On the login node, with the environment active: `hf auth login`, then
    paste the token.
 
-The token is stored in `HF_TOKEN_PATH`, outside `$HF_HOME`: see
-[Hugging Face token](../getting-started/setup.md#override-with-command-line-variables).
+!!! cines "Hugging Face token"
+    `hf auth login` stores your token in `HF_TOKEN_PATH`
+    (`~/.cache/huggingface/token`), not in `HF_HOME`: a model cache shared in
+    the project never contains your token. Never write the token in
+    `env.local.sh` or in a script.
 
 ## A model from elsewhere
 
@@ -80,7 +83,7 @@ hf cache rm model/Qwen/Qwen2.5-1.5B
 ```
 
 To share one cache within the project, see
-[Override with command-line variables](../getting-started/setup.md#override-with-command-line-variables)
+[Change a setting](../getting-started/setup.md#change-a-setting)
 (`HF_HOME=$SHAREDWORKDIR/hf`).
 
 ## The handbook examples

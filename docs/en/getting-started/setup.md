@@ -26,12 +26,15 @@ Then choose your Python environment:
 
     Adastra's prebuilt AI environment, maintained by CINES. **Recommended.**
 
+    The first `source env.sh` creates your copy of it in `$WORKDIR/envs/<module>` (a few minutes).<br>
+    To put it elsewhere, set `AI_VENV_PATH` before: `echo 'AI_VENV_PATH=<dir>' >> env.local.sh`.<br>
+    Avoid `$SCRATCHDIR`, unused files are purged after 30 days.
+
     ```bash
-    source env.sh       # (1)!
+    source env.sh
     ```
 
-    1. The first time, it loads the AI modules and creates your environment in
-       `$WORKDIR/envs/`. This takes a few minutes.
+    Ref: [CINES AI venv](https://dci.dci-gitlab.cines.fr/webextranet/software_stack/cines_software_stack/venv_ai.html#cines-ai-virtual-environments).
 
 === "uv"
 
@@ -67,20 +70,6 @@ Then choose your Python environment:
     Each `uv sync` installs the base and **only** the groups it names: groups
     of a previous run are removed. To keep several, name them all:
     `--group inference --group training`.
-
-    ??? note "Dependency groups"
-        | Group | Installs |
-        |---|---|
-        | `inference` (chapter 3) | `accelerate`, `diffusers` |
-        | `training` (chapter 4) | `peft`, `deepspeed` |
-        | `profiling` (chapter 5) | `tensorboard` |
-        | `accelerate` | Accelerate |
-        | `peft` | PEFT, Accelerate |
-        | `deepspeed` | DeepSpeed |
-        | `diffusers` | Diffusers |
-
-        A chapter group includes its framework groups; a package in several
-        groups has the same version everywhere (one `uv.lock`).
 
     Other versions or packages:
     [Build your own environment (uv)](../appendices/own-env.md).
@@ -125,8 +114,6 @@ source env.sh
     [env] HF_HOME=<WORKDIR>/hf
     ```
 
-    `ERROR: no AI environment`: read the module messages above it.
-
 === "uv"
 
     ```text
@@ -135,18 +122,16 @@ source env.sh
     [env] HF_HOME=<WORKDIR>/hf
     ```
 
-    `ERROR: no uv environment`: run `module load python && uv sync --locked`
-    on a login node, from the repository root.
-
-`ACCOUNT=<unset>` and a warning: `env.local.sh` is missing or empty.
 Then `which python` points into your environment.
 
-!!! cines "An environment elsewhere"
-    `env.sh` looks for the environment in `AI_VENV_PATH` (prebuilt) or
-    `AI_UV_VENV_PATH` (uv). If the variable is already set in your shell
-    (for example in `~/.bashrc`), that value is used. To keep an existing
-    environment, set it in `env.local.sh` instead. Avoid `$SCRATCHDIR`: unused
-    files are purged after 30 days.
+| Failure | Cause |
+|---|---|
+| `[env] ERROR: source this file, do not execute it` | run with `bash env.sh`: use `source env.sh` |
+| `[env] ERROR: WORKDIR or SCRATCHDIR is not set: run on Adastra.` | not an Adastra shell |
+| `[env] WARNING: ACCOUNT is empty`, and `ACCOUNT=<unset>` | `env.local.sh` missing or empty: `echo 'ACCOUNT=<project>' > env.local.sh`, then a new shell |
+| `[env] ERROR: no AI environment in …` (Prebuilt) | the AI modules did not load: read the module messages above it |
+| `[env] ERROR: no uv environment in …` (uv) | `module load python && uv sync --locked` on a login node, from the repository root |
+| `[env] ERROR: AI_ENV must be prebuilt, uv or none` | wrong `AI_ENV` value in `env.local.sh` |
 
 ## What `env.sh` sets
 
@@ -175,24 +160,16 @@ Then `which python` points into your environment.
   `ACCOUNT`, `AI_ENV`, a shared `HF_HOME`. No data or output paths.
 - **Command line:** one session only, see below.
 
-## Override with command-line variables
+## Change a setting
 
-Variables given before `source env.sh` win over `env.local.sh`, which wins
-over the defaults of `env.sh`:
+A value set before `source env.sh` wins over `env.local.sh`, which wins over
+the defaults of `env.sh`:
 
 ```bash
-ACCOUNT=<other_project> source env.sh       # another project
+ACCOUNT=<other_project> source env.sh       # another project, this session only
 HF_HOME=$SHAREDWORKDIR/hf source env.sh     # model cache shared in the project
 ```
 
-Settings: `ACCOUNT`, `AI_ENV`, `AI_MODULE`, `AI_VENV_PATH`, `AI_UV_VENV_PATH`,
-`UV_CACHE_DIR`, `HF_HOME`, `HF_DATASETS_CACHE`, `HF_TOKEN_PATH` (see
-[What `env.sh` sets](#what-envsh-sets)).
-A variable already set in your shell counts as a command-line value: check the
-`[env]` lines. After editing `env.local.sh`, open a new shell.
-
-!!! cines "Hugging Face token"
-    `hf auth login` stores your token in `HF_TOKEN_PATH`
-    (`~/.cache/huggingface/token`), not in `HF_HOME`: a model cache shared in
-    the project never contains your token. Never write the token in
-    `env.local.sh` or in a script.
+A variable already set in your shell (for example in `~/.bashrc`) counts as
+such a value: check the `[env]` lines. After editing `env.local.sh`, open a
+new shell.

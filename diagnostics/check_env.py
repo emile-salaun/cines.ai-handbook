@@ -95,6 +95,9 @@ def check_model(repo_id):
     check(os.environ.get("HF_HUB_OFFLINE") == "1", "HF_HUB_OFFLINE=1")
     try:
         from transformers import AutoModel
+        from transformers.utils import logging as hf_logging
+
+        hf_logging.disable_progress_bar()  # keep the log readable
 
         # safetensors only: no pickle (arbitrary code) when loading weights.
         model = AutoModel.from_pretrained(repo_id, use_safetensors=True)

@@ -14,18 +14,26 @@ From the repository root, replace `<project>` with your project:
 
     ```bash
     # 1 APU, 30 min
-    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 --gpus-per-node=1 --cpus-per-task=24 --time=00:30:00
+    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 \
+        --gpus-per-node=1 --cpus-per-task=24 --threads-per-core=1 \
+        --time=00:30:00
     # whole node (4 APUs), 30 min
-    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 --gpus-per-node=4 --cpus-per-task=96 --time=00:30:00
+    salloc --account=<project> --constraint=MI300 --nodes=1 --ntasks=1 \
+        --gpus-per-node=4 --cpus-per-task=96 --threads-per-core=1 \
+        --time=00:30:00
     ```
 
 === "MI250X"
 
     ```bash
     # 1 GCD, 30 min
-    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 --gpus-per-node=1 --cpus-per-task=8 --time=00:30:00
+    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 \
+        --gpus-per-node=1 --cpus-per-task=8 --threads-per-core=1 \
+        --time=00:30:00
     # whole node (8 GCDs), 30 min
-    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 --gpus-per-node=8 --cpus-per-task=64 --time=00:30:00
+    salloc --account=<project> --constraint=MI250 --nodes=1 --ntasks=1 \
+        --gpus-per-node=8 --cpus-per-task=64 --threads-per-core=1 \
+        --time=00:30:00
     ```
 
 | Option | Sets | Value |
@@ -34,9 +42,8 @@ From the repository root, replace `<project>` with your project:
 | `--constraint` | node type | `MI300` (MI300A) or `MI250` (MI250X) |
 | `--gpus-per-node` | GPUs | 1 to 4 (MI300A), 1 to 8 (MI250X); at least 1 on shared nodes |
 | `--cpus-per-task` | CPU cores | 24 per GPU (MI300A), 8 per GPU (MI250X) |
-| `--time` | maximum duration | `HH:MM:SS` |
-| `--nodes` | number of nodes | `N` |
-| `--ntasks` | number of tasks | `N` |
+| `--threads-per-core` | physical cores only (Adastra default: 2 threads per core) | `1` |
+| `--time` | maximum duration | `HH:MM:SS`, at most `24:00:00`; shorter starts sooner |
 
 `salloc` opens a new shell that holds the allocation.
 
