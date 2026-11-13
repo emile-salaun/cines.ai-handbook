@@ -15,18 +15,37 @@ environment, and the base of the uv environment (no group).
 | [`datasets`](https://huggingface.co/docs/datasets) | load a dataset by path (`load_dataset`), Arrow cache |
 | [`safetensors`](https://huggingface.co/docs/safetensors) | weight format read with `use_safetensors=True` (installed with Transformers) |
 
-## Where data goes
+## Where data lives
 
 | What | Variable | Default | Purge |
 |---|---|---|---|
 | Hugging Face models | `$HF_HOME` | `$WORKDIR/hf` | never |
 | Your datasets | `$DATA_DIR` | `$WORKDIR/handbook/datasets` | never |
-| Public datasets provided by CINES | `$DSDIR` | set by Adastra | — |
+| Public datasets provided by CINES (read-only) | `$DSDIR` | set by Adastra | — |
 | Dataset cache (Arrow files, regenerated when missing) | `$HF_DATASETS_CACHE` | `$SCRATCHDIR/hf/datasets` | 30 days unused |
 | Job outputs, checkpoints | `$OUTPUT_DIR` | `$SCRATCHDIR/handbook` | 30 days unused |
+| Your Hugging Face token | `$HF_TOKEN_PATH` | `~/.cache/huggingface/token` | never |
 
 The defaults come from `env.sh`; to change them, see
 [Set up your environment](../getting-started/setup.md#override-with-command-line-variables).
+
+In a job, and in the shell of an [interactive session](../getting-started/interactive.md),
+`env.sh` also sets `HF_HUB_OFFLINE=1`: `hf`, Transformers and Datasets read only
+local files. Download from a plain login shell.
+
+??? note "Without `env.sh`"
+    In your own scripts or environment, the same settings are:
+
+    ```bash
+    export HF_HOME=$WORKDIR/hf
+    export HF_DATASETS_CACHE=$SCRATCHDIR/hf/datasets
+    export HF_TOKEN_PATH=$HOME/.cache/huggingface/token
+    export HF_HUB_OFFLINE=1        # in job scripts only: downloads fail with it
+    ```
+
+    Without `HF_HOME`, models go to `~/.cache/huggingface`, in your small home
+    directory. `DATA_DIR` and `OUTPUT_DIR` are handbook variables: in your own
+    code, use the paths.
 
 ## Steps
 

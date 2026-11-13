@@ -5,23 +5,27 @@ that jobs can load it offline.
 
 ## Command
 
-On a login node, from the repository root, after `source env.sh`:
+On a login node, from the repository root, after `source env.sh` (it sets
+`HF_HOME` and activates the environment that provides `hf`):
 
 ```bash
-bash setup/download_assets.sh Qwen/Qwen2.5-1.5B
+hf download Qwen/Qwen2.5-1.5B
 ```
 
-Options after the model id go to `hf download`:
+Useful options:
 
 ```bash
-bash setup/download_assets.sh Qwen/Qwen2.5-1.5B --exclude "*.bin"       # skip PyTorch pickle weights
-bash setup/download_assets.sh Qwen/Qwen2.5-1.5B --revision <commit>     # a fixed version
+hf download Qwen/Qwen2.5-1.5B --exclude "*.bin"       # skip PyTorch pickle weights
+hf download Qwen/Qwen2.5-1.5B --revision <commit>     # a fixed version
 ```
 
 The handbook loads weights with `use_safetensors=True`: `*.bin` files are not
 needed when the model also has `*.safetensors` files.
 
 ## What to look at
+
+The last line printed by `hf download` is the model path. It must start with
+your `$HF_HOME` (`<WORKDIR>/hf/hub/models--Qwen--Qwen2.5-1.5B/snapshots/<hash>`).
 
 ```bash
 hf cache ls                       # models in the cache, with their size
@@ -35,6 +39,14 @@ In your code, load the model by its id: it is read from `$HF_HOME`.
 ```python
 model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-1.5B", use_safetensors=True)
 ```
+
+| Failure | Cause |
+|---|---|
+| `hf: command not found` | environment not active: `source env.sh` |
+| path under `~/.cache/huggingface` | `env.sh` not sourced: `HF_HOME` is not set; download again after `source env.sh` |
+| error about offline mode | shell inside an allocation or a job (`echo $HF_HUB_OFFLINE` prints `1`): download from a plain login shell |
+| `401` or `403`, `GatedRepoError` | gated model: see below |
+| `Disk quota exceeded` | see [Disk space](#disk-space) |
 
 ## Gated models
 
@@ -67,3 +79,9 @@ hf cache rm model/Qwen/Qwen2.5-1.5B
 To share one cache within the project, see
 [Override with command-line variables](../getting-started/setup.md#override-with-command-line-variables)
 (`HF_HOME=$SHAREDWORKDIR/hf`).
+
+## The handbook examples
+
+`bash setup/download_assets.sh` downloads the models and the dataset of the
+handbook examples (see [Set up your environment](../getting-started/setup.md)).
+It prints each `hf download` command before running it.

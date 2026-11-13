@@ -1,6 +1,7 @@
 # Inference
 
-Batch inference with Transformers, LLM serving with vLLM (1 GPU, tensor parallel) and image generation with Diffusers.
+Batch generation with Transformers, LLM batch inference and serving with vLLM
+on a whole node, and image generation with Diffusers.
 
 ## Requirements
 
@@ -17,5 +18,15 @@ Batch inference with Transformers, LLM serving with vLLM (1 GPU, tensor parallel
     uv sync --locked --group inference
     ```
 
-!!! cines "Planned"
-    This chapter is not written yet. See the [plan](https://github.com/emile-salaun/cines.ai-handbook#status).
+## Steps
+
+<div class="cines-steps" markdown>
+
+1. [Batch generation with Transformers](transformers.md): one GPU, any model
+   of the Hub, throughput.
+
+</div>
+
+!!! cines "In progress"
+    vLLM (batch inference and serving, whole node) and Diffusers are being
+    written.

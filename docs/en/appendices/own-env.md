@@ -1,61 +1,101 @@
 # Build your own environment (uv)
 
-**Goal:** a uv environment of your own (another PyTorch or ROCm version, extra
-packages), used with the handbook job scripts.
+**Goal:** a Python environment of your own (other PyTorch or ROCm versions,
+extra packages, compiled extensions), used with the handbook job scripts.
 
-The handbook's uv environment ([Set up your environment](../getting-started/setup.md),
-uv tab) is fixed: same versions for everyone. Build your own when you need
-something else. Everything below runs on a login node.
+| Environment | For |
+|---|---|
+| Prebuilt (Adastra) | stable versions maintained by CINES |
+| Handbook uv ([Set up your environment](../getting-started/setup.md)) | recent versions, the same for everyone |
+| Your own (this page) | other versions, your packages, compiled extensions |
 
-## Create the project
+Everything below runs on a login node. Keep environments in `$WORKDIR`: an
+environment holds tens of thousands of files, too many for `$HOME`.
+
+## A recent PyTorch
 
 ```bash
 module load python                                        # (1)!
-mkdir -p $WORKDIR/myenv
-cp $WORKDIR/cines.ai-handbook/{pyproject.toml,.python-version} $WORKDIR/myenv/   # (2)!
-cd $WORKDIR/myenv
-uv sync                                                   # (3)!
+uv venv --python 3.12 $WORKDIR/myenv                      # (2)!
+source $WORKDIR/myenv/bin/activate
+uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next/ \
+    "torch[device-gfx942,device-gfx90a]==2.14.0+rocm10.1.0"   # (3)!
 ```
 
-1. Provides `uv` (and a Python).
-2. Starts from the handbook's dependencies and groups. Change `name` in
-   `pyproject.toml`.
-3. Creates `.venv` and `uv.lock` in `$WORKDIR/myenv`, with the base
-   dependencies; add `--group <name>` for the handbook's dependency groups.
+1. Provides `uv`.
+2. Python 3.12: the version of the handbook, and the only one of the vLLM
+   ROCm wheels.
+3. PyTorch built by AMD for ROCm 10.1, with the GPU code of MI300A
+   (`gfx942`) and MI250X (`gfx90a`) only. The AMD index comes first, the
+   other dependencies from PyPI. Other versions:
+   [AMD, Install PyTorch for ROCm](https://rocm.docs.amd.com/projects/ai-ecosystem/en/latest/frameworks/pytorch/install.html).
+
+The wheel ships its own ROCm libraries: no ROCm module, no SDK needed to run
+PyTorch.
+
+```bash
+python -c "import torch; print(torch.__version__, torch.version.hip)"
+```
+
+```text
+2.14.0+rocm10.1.0 10.1.<n>
+```
 
 ## Add packages
 
 ```bash
-uv add timm                 # installs it, records it in pyproject.toml and uv.lock
+uv pip install transformers datasets
+uv pip freeze > $WORKDIR/myenv-requirements.txt      # (1)!
 ```
 
-`uv.lock` pins every version: keep it with `pyproject.toml` (in a git
-repository of your own, for example) to rebuild the same environment later
-with `uv sync --locked`.
+1. Every installed version, to build the same environment again later:
+   `uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next/ -r $WORKDIR/myenv-requirements.txt`
+   in a new environment.
 
-## Change the PyTorch or ROCm version
+## Compile extensions
 
-In `pyproject.toml`, the PyTorch index sets the ROCm version of the wheels,
-and the `torch` line sets the PyTorch version:
+Packages compiled for the GPU at install time (flash-attention, your own HIP
+kernels, for example) need the ROCm SDK (compilers, headers), in the ROCm
+version of the PyTorch wheel (`torch.version.hip`, here 10.1):
 
-```toml
-dependencies = [
-    "torch==2.11.*",                                  # PyTorch version
-    ...
-]
-
-[[tool.uv.index]]
-name = "pytorch-rocm"
-url = "https://download.pytorch.org/whl/rocm7.2"      # ROCm version
-explicit = true
+```bash
+uv pip install --extra-index-url https://stable.repo.amd.com/rocm/whl-next/ \
+    "rocm[libraries,devel,device-gfx942,device-gfx90a]==10.1.0"   # (1)!
+rocm-sdk init                                                     # (2)!
+rocm-sdk test
+export ROCM_PATH=$(rocm-sdk path --root)
+export PATH="$ROCM_PATH/bin:$PATH"
+export LD_LIBRARY_PATH="$ROCM_PATH/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"   # (3)!
+export LLVM_PATH="$ROCM_PATH/lib/llvm"
+export HIP_DEVICE_LIB_PATH=$(echo $ROCM_PATH/lib/llvm/lib/clang/*/lib/amdgcn/bitcode)   # (4)!
+export PYTORCH_ROCM_ARCH="gfx942;gfx90a"                          # (5)!
+export MAX_JOBS=8                                                 # (6)!
+uv pip install --no-build-isolation <package>
 ```
 
-Then `uv lock --upgrade-package torch` and `uv sync`.
+1. The ROCm SDK as Python packages, in the environment: same index, same
+   version as PyTorch.
+2. Unpacks the development files; `rocm-sdk test` checks the installation.
+3. Prepends: the libraries already in `LD_LIBRARY_PATH` (Cray, network)
+   stay.
+4. The `clang/<version>` directory changes with the ROCm version.
+5. Builds for MI300A (`gfx942`) and MI250X (`gfx90a`).
+6. Limits parallel compilation on the shared login node.
 
-The wheel ships its own ROCm libraries, but they must work with the GPU
-driver of the nodes: check the
-[ROCm compatibility matrix](https://rocm.docs.amd.com/en/latest/compatibility/compatibility-matrix.html).
-The reliable test is `check_env.py` on both node types (below).
+??? note "The ROCm SDK from a tarball"
+    The same SDK exists as one archive for all GPUs:
+
+    ```bash
+    cd $WORKDIR
+    wget https://stable.repo.amd.com/rocm/core/tarball/therock-dist-linux-multiarch-10.1.0.tar.gz
+    mkdir rocm-10.1.0 && tar -xf therock-dist-linux-multiarch-10.1.0.tar.gz -C rocm-10.1.0
+    export ROCM_PATH=$WORKDIR/rocm-10.1.0
+    ```
+
+    Then the same `export` lines as above, from `PATH`. The archive has no
+    install step: nothing else to run.
+
+    Ref: [TheRock, Releases](https://github.com/ROCm/TheRock/blob/main/RELEASES.md).
 
 ## Use it with the handbook job scripts
 
@@ -63,29 +103,21 @@ In the handbook's `env.local.sh`:
 
 ```bash
 AI_ENV=uv
-AI_UV_VENV_PATH=$WORKDIR/myenv/.venv
+AI_UV_VENV_PATH=$WORKDIR/myenv
 ```
 
 Open a new shell, `source env.sh`: the `[env] Python environment (uv)` line
 shows your environment, and every job script that sources `env.sh` uses it.
 
-## Compile extensions
-
-Packages compiled at install time for the GPU (flash-attention, for example)
-need the ROCm compilers of the system, in the same version as the wheel
-(`python -c "import torch; print(torch.version.hip)"`):
+Jobs that compile at run time (DeepSpeed operations, for example) also need
+the SDK. Add to `env.local.sh`, with the path printed by
+`rocm-sdk path --root`:
 
 ```bash
-module load rocm/<version>                   # (1)!
-export PYTORCH_ROCM_ARCH="gfx942;gfx90a"     # (2)!
-export MAX_JOBS=8                            # (3)!
-uv add --no-build-isolation <package>
-module purge
+export ROCM_PATH=<path printed by rocm-sdk path --root>
+export PATH="$ROCM_PATH/bin:$PATH"
+export LD_LIBRARY_PATH="$ROCM_PATH/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 ```
-
-1. `module avail rocm` lists the versions available on Adastra.
-2. Builds for MI300A (`gfx942`) and MI250X (`gfx90a`).
-3. Limits parallel compilation on the shared login node.
 
 ## Check
 
@@ -109,10 +141,13 @@ ROCm version the node's driver does not support.
 
 | Symptom | Cause, fix |
 |---|---|
-| `[env] WARNING: LD_LIBRARY_PATH contains ROCm` | System ROCm modules loaded: `module purge` before `source env.sh`. |
-| `GPU 0 matmul` fails, arch missing | The wheel was not built for the node's GPU: another PyTorch or ROCm version. |
-| Disk quota exceeded (inodes) | An environment holds tens of thousands of files: `du -sh --inodes $WORKDIR/*`, remove unused environments. |
+| `[env] WARNING: LD_LIBRARY_PATH contains system ROCm libraries` | System ROCm modules loaded: `module purge` before `source env.sh`. |
+| `GPU 0 matmul` fails, arch missing | The wheel has no GPU code for the node: add its `device-*` extra (`device-gfx942`, `device-gfx90a`). |
+| HIP error at the first GPU operation | ROCm version too recent for the node's driver: try an older one. |
+| Compilation fails, `hip` headers or symbols not found | SDK and PyTorch in different ROCm versions: compare `rocm-sdk version` and `torch.version.hip`. |
+| Disk quota exceeded (inodes) | Too many files in `$WORKDIR`: `du -s --inodes $WORKDIR/*`, remove unused environments. |
 | `$SCRATCHDIR` full | Download cache: `uv cache clean`. |
 | Environment broken after a few weeks | It was in `$SCRATCHDIR` (purged): keep environments in `$WORKDIR`. |
 
-Ref: [uv, Using uv with PyTorch](https://docs.astral.sh/uv/guides/integration/pytorch/).
+Ref: [AMD, Install PyTorch for ROCm](https://rocm.docs.amd.com/projects/ai-ecosystem/en/latest/frameworks/pytorch/install.html),
+[uv, The pip interface](https://docs.astral.sh/uv/pip/).

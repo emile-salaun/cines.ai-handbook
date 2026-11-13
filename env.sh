@@ -131,9 +131,10 @@ case "${AI_ENV}" in
             # shellcheck source=/dev/null
             source "${AI_UV_VENV_PATH}/bin/activate"
             # The PyTorch wheel ships its own ROCm libraries: system ROCm
-            # libraries first in LD_LIBRARY_PATH may be loaded instead.
-            if [[ "${LD_LIBRARY_PATH:-}" == *rocm* ]]; then
-                echo "[env] WARNING: LD_LIBRARY_PATH contains ROCm libraries (loaded modules?);" \
+            # libraries (/opt/rocm*) first in LD_LIBRARY_PATH may be loaded
+            # instead. A ROCm SDK of the environment (ROCM_PATH) is fine.
+            if [[ ":${LD_LIBRARY_PATH:-}:" == *:/opt/rocm* ]]; then
+                echo "[env] WARNING: LD_LIBRARY_PATH contains system ROCm libraries (loaded modules?);" \
                     "they may conflict with the PyTorch wheel. Try: module purge" >&2
             fi
             # Packages from PYTHONPATH would be imported before the environment's.

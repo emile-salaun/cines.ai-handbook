@@ -101,8 +101,8 @@ Then choose your Python environment:
 
         Ref: [uv, Using uv with PyTorch](https://docs.astral.sh/uv/guides/integration/pytorch/).
 
-Finally, download the test model (`Qwen/Qwen2.5-0.5B`, about 1 GB) into
-`$WORKDIR/hf`:
+Finally, download the models and the dataset of the handbook examples
+(small models of about 1 GB each, listed in the script) into `$WORKDIR`:
 
 ```bash
 bash setup/download_assets.sh

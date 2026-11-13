@@ -4,24 +4,30 @@
 
 ## Public datasets ($DSDIR)
 
-CINES provides public datasets in a common directory, `$DSDIR`. Look there
-first: no download, no quota used.
+CINES provides public datasets in a common directory, `$DSDIR`. It is
+**read-only**: you can use the datasets already there, not add your own.
+Look there first: no download, no quota used.
 
 ```bash
 ls -- "$DSDIR"
 ```
 
-Use a dataset in place, by its path (no copy). A dataset is missing: ask
-svp@cines.fr to add it.
+Load a dataset in place, by its path: no copy to `$DATA_DIR`. The Arrow
+cache of the first load goes to `$HF_DATASETS_CACHE`, not to `$DSDIR`.
+
+A dataset you need is not there: ask svp@cines.fr to add it, or put your own
+copy in `$DATA_DIR` ([from the Hub](#from-the-hugging-face-hub) or
+[from your computer](#from-your-computer)).
 
 Ref: [Adastra doc, Data storage and transfers](https://dci.dci-gitlab.cines.fr/webextranet/data_storage_and_transfers/index.html).
 
 ## From the Hugging Face Hub
 
-On a login node, from the repository root, after `source env.sh`:
+On a login node, after `source env.sh` (same rules as for
+[a model](models.md#command)):
 
 ```bash
-bash setup/download_assets.sh Salesforce/wikitext --repo-type dataset --local-dir $DATA_DIR/wikitext
+hf download Salesforce/wikitext --repo-type dataset --local-dir $DATA_DIR/wikitext
 ```
 
 The dataset is a plain directory in `$DATA_DIR`. Load it by its path:

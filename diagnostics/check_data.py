@@ -28,7 +28,7 @@ import torch
 torch.backends.cuda.preferred_blas_library("cublas")
 
 ENV_VARS = ("HF_HOME", "HF_HUB_OFFLINE", "HF_DATASETS_CACHE", "DATA_DIR", "DSDIR")
-NOT_CACHED = "not in HF_HOME: bash setup/download_assets.sh <repo_id> on a login node"
+NOT_CACHED = "not in HF_HOME: hf download <repo_id> on a login node, after source env.sh"
 HINTS = {
     "LocalEntryNotFoundError": NOT_CACHED,
     "OfflineModeIsEnabled": NOT_CACHED,

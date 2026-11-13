@@ -34,7 +34,10 @@ nav = [
     { "Get a dataset" = "data-models/datasets.md" },
     { "Use them in a job" = "data-models/offline.md" },
   ] },
-  { "3 · Inference" = "inference/index.md" },
+  { "3 · Inference" = [
+    "inference/index.md",
+    { "Batch generation with Transformers" = "inference/transformers.md" },
+  ] },
   { "4 · Training & fine-tuning" = "training/index.md" },
   { "5 · Profiling" = "profiling/index.md" },
   { "A · Appendices" = [

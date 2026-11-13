@@ -52,7 +52,7 @@ All checks passed.
 
 | Failure | Cause |
 |---|---|
-| `LocalEntryNotFoundError` | model not downloaded, or downloaded with another `HF_HOME`: compare the `[env] HF_HOME` lines of the download and of the job |
+| `LocalEntryNotFoundError` | model not downloaded, or downloaded with another `HF_HOME`: compare the path printed by `hf download` with the `HF_HOME=` line of the job |
 | `FileNotFoundError` on the dataset | wrong path, or dataset not copied yet |
 | `does not appear to have a file named …` | a file was left out by `--exclude` / `--include`: download again without it |
 | `load_dataset("<repo_id>")` fails | datasets of the handbook are loaded by path: `load_dataset("$DATA_DIR/<name>")` |
